@@ -1,0 +1,11 @@
+# Python bytecode and local caches
+__pycache__/
+*.py[cod]
+
+# Runtime alert history (contains locally collected feed identifiers)
+seen_news.json
+
+# Local secrets and environment files
+.env
+.env.*
+*.secret
