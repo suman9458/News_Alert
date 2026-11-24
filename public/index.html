@@ -462,56 +462,108 @@
     .dot-amber { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.6); }
     .dot-green { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
 
-    /* Country Filter Pill Group */
-    .country-pill-group {
+    /* Country Dropdown Styles */
+    .country-dropdown-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .country-dropdown-btn {
       display: inline-flex;
       align-items: center;
+      gap: 0.5rem;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 0.2rem;
-      gap: 0.15rem;
-      overflow-x: auto;
-      max-width: 100%;
-      scrollbar-width: thin;
-    }
-
-    .country-pill-group::-webkit-scrollbar {
-      height: 3px;
-    }
-
-    .country-pill-group::-webkit-scrollbar-thumb {
-      background: var(--border-color);
-      border-radius: 3px;
-    }
-
-    .pill-country {
-      padding: 0.35rem 0.65rem;
+      padding: 0.38rem 0.85rem;
       font-size: 0.78rem;
       font-weight: 600;
-      border-radius: 6px;
+      color: var(--text-main);
       cursor: pointer;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      white-space: nowrap;
+      transition: all 0.2s ease;
       user-select: none;
     }
 
-    .pill-country:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.05);
+    .country-dropdown-btn:hover {
+      border-color: #3b82f6;
+      background: var(--bg-card-hover);
     }
 
-    .pill-country.active {
+    .country-dropdown-btn.active,
+    .country-dropdown-wrapper.open .country-dropdown-btn {
+      border-color: #3b82f6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
       color: #60a5fa;
-      background: rgba(59, 130, 246, 0.22);
-      border-bottom: 2px solid #3b82f6;
-      box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
+    }
+
+    .dropdown-caret {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      margin-left: 0.2rem;
+    }
+
+    .country-dropdown-wrapper.open .dropdown-caret {
+      transform: rotate(180deg);
+    }
+
+    .country-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 220px;
+      background: #111827;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.35rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.2rem;
+      z-index: 100;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(59, 130, 246, 0.15);
+      animation: menuFadeIn 0.15s ease-out;
+    }
+
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .country-dropdown-wrapper.open .country-dropdown-menu {
+      display: flex;
+    }
+
+    .country-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .country-dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .country-dropdown-item.active {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      font-weight: 700;
+    }
+
+    .country-dropdown-item strong {
+      color: #93c5fd;
+      font-weight: 600;
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .divider-v {
@@ -1111,47 +1163,57 @@
 
           <div class="divider-v"></div>
 
-          <!-- Country Filter Group with Real Visual Flag Icons -->
-          <div class="pill-group country-pill-group" title="Filter by Country / Economic Region">
-            <button class="pill-country active" data-country="all" title="All Global Economies">
-              <span>🌍</span> <span>All</span>
+          <!-- Country Filter Dropdown with Flags -->
+          <div class="country-dropdown-wrapper" id="countryDropdownWrapper" title="Choose Economic Region">
+            <button id="countryDropdownBtn" class="country-dropdown-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span id="countrySelectedIcon" class="selected-flag">
+                <span class="flag-globe">🌍</span>
+              </span>
+              <span id="countrySelectedText" class="selected-text">All Countries</span>
+              <span class="dropdown-caret">▼</span>
             </button>
-            <button class="pill-country" data-country="US" title="United States (Fed, USD, Treasuries, Wall St)">
-              <img src="/flags/us.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/us.png';" class="flag-icon" alt="US">
-              <span>US</span>
-            </button>
-            <button class="pill-country" data-country="EU" title="Eurozone (ECB, EUR, Germany, France)">
-              <img src="/flags/eu.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/eu.png';" class="flag-icon" alt="EUR">
-              <span>EUR</span>
-            </button>
-            <button class="pill-country" data-country="UK" title="United Kingdom (BOE, GBP, Pound)">
-              <img src="/flags/gb.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/gb.png';" class="flag-icon" alt="UK">
-              <span>UK</span>
-            </button>
-            <button class="pill-country" data-country="JP" title="Japan (BOJ, JPY, Yen)">
-              <img src="/flags/jp.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/jp.png';" class="flag-icon" alt="JPY">
-              <span>JPY</span>
-            </button>
-            <button class="pill-country" data-country="AU" title="Australia (RBA, AUD, Aussie)">
-              <img src="/flags/au.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/au.png';" class="flag-icon" alt="AUD">
-              <span>AUD</span>
-            </button>
-            <button class="pill-country" data-country="NZ" title="New Zealand (RBNZ, NZD, Kiwi)">
-              <img src="/flags/nz.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/nz.png';" class="flag-icon" alt="NZD">
-              <span>NZD</span>
-            </button>
-            <button class="pill-country" data-country="CA" title="Canada (BOC, CAD, Loonie)">
-              <img src="/flags/ca.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/ca.png';" class="flag-icon" alt="CAD">
-              <span>CAD</span>
-            </button>
-            <button class="pill-country" data-country="CH" title="Switzerland (SNB, CHF, Swiss Franc)">
-              <img src="/flags/ch.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/ch.png';" class="flag-icon" alt="CHF">
-              <span>CHF</span>
-            </button>
-            <button class="pill-country" data-country="CN" title="China (PBOC, CNY, Yuan)">
-              <img src="/flags/cn.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/cn.png';" class="flag-icon" alt="CNY">
-              <span>CNY</span>
-            </button>
+            <div id="countryDropdownMenu" class="country-dropdown-menu" role="listbox">
+              <div class="country-dropdown-item active" data-country="all">
+                <span class="item-flag">🌍</span>
+                <span class="item-name">All Countries (Global)</span>
+              </div>
+              <div class="country-dropdown-item" data-country="US">
+                <img src="/flags/us.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/us.png';" class="flag-icon" alt="US">
+                <span class="item-name">United States <strong>(USD)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="EU">
+                <img src="/flags/eu.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/eu.png';" class="flag-icon" alt="EUR">
+                <span class="item-name">Eurozone <strong>(EUR)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="UK">
+                <img src="/flags/gb.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/gb.png';" class="flag-icon" alt="UK">
+                <span class="item-name">United Kingdom <strong>(GBP)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="JP">
+                <img src="/flags/jp.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/jp.png';" class="flag-icon" alt="JPY">
+                <span class="item-name">Japan <strong>(JPY)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="AU">
+                <img src="/flags/au.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/au.png';" class="flag-icon" alt="AUD">
+                <span class="item-name">Australia <strong>(AUD)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="NZ">
+                <img src="/flags/nz.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/nz.png';" class="flag-icon" alt="NZD">
+                <span class="item-name">New Zealand <strong>(NZD)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="CA">
+                <img src="/flags/ca.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/ca.png';" class="flag-icon" alt="CAD">
+                <span class="item-name">Canada <strong>(CAD)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="CH">
+                <img src="/flags/ch.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/ch.png';" class="flag-icon" alt="CHF">
+                <span class="item-name">Switzerland <strong>(CHF)</strong></span>
+              </div>
+              <div class="country-dropdown-item" data-country="CN">
+                <img src="/flags/cn.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/cn.png';" class="flag-icon" alt="CNY">
+                <span class="item-name">China <strong>(CNY)</strong></span>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -1800,15 +1862,57 @@
         });
       });
 
-      // Country Filter Pill Buttons Click (All, US, EU, UK, JP, AU, NZ, CA, CH, CN)
-      document.querySelectorAll('.pill-country').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.pill-country').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          state.activeCountry = btn.dataset.country;
-          renderFeed();
+      // Country Dropdown Interactions
+      const countryWrapper = document.getElementById('countryDropdownWrapper');
+      const countryBtn = document.getElementById('countryDropdownBtn');
+      const countrySelectedIcon = document.getElementById('countrySelectedIcon');
+      const countrySelectedText = document.getElementById('countrySelectedText');
+
+      if (countryBtn && countryWrapper) {
+        countryBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = countryWrapper.classList.toggle('open');
+          countryBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         });
-      });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!countryWrapper.contains(e.target)) {
+            countryWrapper.classList.remove('open');
+            countryBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Select country item from dropdown
+        document.querySelectorAll('.country-dropdown-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const countryCode = item.dataset.country;
+            document.querySelectorAll('.country-dropdown-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+
+            state.activeCountry = countryCode;
+
+            // Update Trigger button visual
+            const info = COUNTRY_DISPLAY_INFO[countryCode] || { flagImg: '', flagCdn: '', flagEmoji: '🌍', name: 'All Countries', code: 'ALL' };
+            if (info.flagImg) {
+              countrySelectedIcon.innerHTML = `<img src="${info.flagImg}" onerror="this.onerror=null;this.src='${info.flagCdn || ''}';" class="flag-icon" alt="${info.code}">`;
+            } else {
+              countrySelectedIcon.innerHTML = `<span class="flag-globe">${info.flagEmoji}</span>`;
+            }
+            countrySelectedText.textContent = countryCode === 'all' ? 'All Countries' : `${info.name} (${info.code})`;
+
+            if (countryCode !== 'all') {
+              countryBtn.classList.add('active');
+            } else {
+              countryBtn.classList.remove('active');
+            }
+
+            countryWrapper.classList.remove('open');
+            countryBtn.setAttribute('aria-expanded', 'false');
+            renderFeed();
+          });
+        });
+      }
 
       // 2nd Image: Category Tabs Click (All Headlines, Live Alerts, Gold, Forex, Fed)
       document.querySelectorAll('.filter-tab').forEach(tab => {
