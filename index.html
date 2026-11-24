@@ -1128,10 +1128,6 @@
           <span id="soundLabel">Sound ON</span>
         </button>
 
-        <button id="btnTestSound" class="btn btn-test" title="Play sound preview">
-          <span>🔔 Test Chime</span>
-        </button>
-
         <button id="btnNotifToggle" class="btn" title="Enable browser push notifications">
           <span id="notifIcon">🔕</span>
           <span id="notifLabel">Enable Desktop Alerts</span>
@@ -2144,18 +2140,6 @@
           icon.textContent = '🔇';
           label.textContent = 'Sound MUTED';
         }
-      });
-
-      // Test Sound
-      document.getElementById('btnTestSound').addEventListener('click', () => {
-        getAudioContext();
-        playAlertChime();
-        showToast({
-          title: 'Sound alert preview chime played!',
-          category: 'Audio Engine',
-          impact: 'High',
-          source: 'System'
-        });
       });
 
       // Desktop Notification Toggle
