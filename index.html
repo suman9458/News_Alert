@@ -1140,6 +1140,16 @@
           <option value="Low">🟢 Low Impact</option>
           <option value="all" selected>⚡ All News</option>
         </select>
+        <script>
+          (function() {
+            try {
+              var s = localStorage.getItem('notifImpactFilter');
+              if (s && document.getElementById('selectNotifImpact')) {
+                document.getElementById('selectNotifImpact').value = s;
+              }
+            } catch(e) {}
+          })();
+        </script>
 
         <select id="selectInterval" class="select-input" title="Auto-refresh frequency">
           <option value="15000" selected>Poll: 15s (Fast)</option>
@@ -1414,6 +1424,14 @@
 
   <script>
     // --- Application State ---
+    let initialNotifFilter = 'all';
+    try {
+      const savedNF = localStorage.getItem('notifImpactFilter');
+      if (savedNF && ['High', 'Medium', 'Low', 'all'].includes(savedNF)) {
+        initialNotifFilter = savedNF;
+      }
+    } catch (e) {}
+
     const state = {
       news: [],
       sessionAlerts: [],
@@ -1426,7 +1444,7 @@
       searchQuery: '',
       soundEnabled: true,
       desktopNotifEnabled: false,
-      notifImpactFilter: 'all', // 'all' | 'High' | 'Medium' | 'Low'
+      notifImpactFilter: initialNotifFilter, // 'all' | 'High' | 'Medium' | 'Low'
       pollInterval: 15000,
       pollTimer: null,
       progressTimer: null,
@@ -2019,6 +2037,44 @@
         btnTheme.addEventListener('click', toggleTheme);
       }
 
+      // Initialize Notification Impact Filter from localStorage
+      const savedNotifImpact = localStorage.getItem('notifImpactFilter');
+      if (savedNotifImpact && ['High', 'Medium', 'Low', 'all'].includes(savedNotifImpact)) {
+        state.notifImpactFilter = savedNotifImpact;
+        const selectNotif = document.getElementById('selectNotifImpact');
+        if (selectNotif) {
+          selectNotif.value = savedNotifImpact;
+        }
+      }
+
+      // Initialize Sound setting from localStorage
+      const savedSound = localStorage.getItem('soundEnabled');
+      if (savedSound !== null) {
+        state.soundEnabled = (savedSound === 'true');
+        const btn = document.getElementById('btnSoundToggle');
+        const icon = document.getElementById('soundIcon');
+        const label = document.getElementById('soundLabel');
+        if (btn && icon && label) {
+          if (state.soundEnabled) {
+            btn.classList.add('active');
+            icon.textContent = '🔊';
+            label.textContent = 'Sound ON';
+          } else {
+            btn.classList.remove('active');
+            icon.textContent = '🔇';
+            label.textContent = 'Sound MUTED';
+          }
+        }
+      }
+
+      // Initialize Poll interval from localStorage
+      const savedPoll = localStorage.getItem('pollInterval');
+      if (savedPoll !== null) {
+        state.pollInterval = parseInt(savedPoll, 10);
+        const selectPoll = document.getElementById('selectInterval');
+        if (selectPoll) selectPoll.value = savedPoll;
+      }
+
       initNotifications();
       fetchNewsData();
       setupPollInterval();
@@ -2126,6 +2182,9 @@
       // Sound Toggle
       document.getElementById('btnSoundToggle').addEventListener('click', () => {
         state.soundEnabled = !state.soundEnabled;
+        try {
+          localStorage.setItem('soundEnabled', state.soundEnabled ? 'true' : 'false');
+        } catch (e) {}
         const btn = document.getElementById('btnSoundToggle');
         const icon = document.getElementById('soundIcon');
         const label = document.getElementById('soundLabel');
@@ -2150,6 +2209,9 @@
       // Notification Impact Type Filter Dropdown
       document.getElementById('selectNotifImpact').addEventListener('change', (e) => {
         state.notifImpactFilter = e.target.value;
+        try {
+          localStorage.setItem('notifImpactFilter', e.target.value);
+        } catch (err) {}
         const labels = {
           all: 'All News',
           High: 'High Impact News',
@@ -2167,6 +2229,9 @@
       // Polling Interval Select
       document.getElementById('selectInterval').addEventListener('change', (e) => {
         state.pollInterval = parseInt(e.target.value, 10);
+        try {
+          localStorage.setItem('pollInterval', e.target.value);
+        } catch (err) {}
         setupPollInterval();
       });
 
