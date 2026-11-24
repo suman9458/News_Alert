@@ -5,6 +5,7 @@ Fetches, cleans, filters, and categorizes real-time Gold & Forex news headlines.
 Includes an in-memory cache to prevent feed throttling and ensure fast response times.
 """
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import email.utils
 import hashlib
 import json
@@ -176,18 +177,21 @@ def get_latest_news():
     collected = []
     seen_titles = set()
 
-    for source_label, url in feed_configs:
-        try:
-            feed_items = fetch_feed(source_label, url)
-            for item in feed_items:
-                normalized_key = item["title"].lower()
-                # Deduplicate similar headlines
-                if normalized_key not in seen_titles:
-                    seen_titles.add(normalized_key)
-                    collected.append(item)
-        except Exception:
-            # Continue fetching other feeds if one times out or fails
-            continue
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        future_to_source = {
+            executor.submit(fetch_feed, source_label, url): source_label
+            for source_label, url in feed_configs
+        }
+        for future in as_completed(future_to_source):
+            try:
+                feed_items = future.result()
+                for item in feed_items:
+                    normalized_key = item["title"].lower()
+                    if normalized_key not in seen_titles:
+                        seen_titles.add(normalized_key)
+                        collected.append(item)
+            except Exception:
+                continue
 
     # Sort descending by timestamp
     collected.sort(key=lambda x: x["timestamp"], reverse=True)
