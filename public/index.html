@@ -705,8 +705,20 @@
       border: 1px solid rgba(59, 130, 246, 0.25);
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       letter-spacing: 0.02em;
+    }
+
+    .flag-icon {
+      width: 17px;
+      height: 12px;
+      object-fit: cover;
+      border-radius: 2px;
+      display: inline-block;
+      vertical-align: middle;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      flex-shrink: 0;
     }
 
     .badge-source {
@@ -1078,37 +1090,46 @@
 
           <div class="divider-v"></div>
 
-          <!-- Country Filter Group (US, Euro, UK, Japan, Australia, New Zealand, Canada, Swiss, China) -->
+          <!-- Country Filter Group with Real Visual Flag Icons -->
           <div class="pill-group country-pill-group" title="Filter by Country / Economic Region">
             <button class="pill-country active" data-country="all" title="All Global Economies">
-              <span>🌍</span> All
+              <span>🌍</span> <span>All</span>
             </button>
             <button class="pill-country" data-country="US" title="United States (Fed, USD, Treasuries, Wall St)">
-              <span>🇺🇸</span> US
+              <img src="/flags/us.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/us.png';" class="flag-icon" alt="US">
+              <span>US</span>
             </button>
             <button class="pill-country" data-country="EU" title="Eurozone (ECB, EUR, Germany, France)">
-              <span>🇪🇺</span> EUR
+              <img src="/flags/eu.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/eu.png';" class="flag-icon" alt="EUR">
+              <span>EUR</span>
             </button>
             <button class="pill-country" data-country="UK" title="United Kingdom (BOE, GBP, Pound)">
-              <span>🇬🇧</span> UK
+              <img src="/flags/gb.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/gb.png';" class="flag-icon" alt="UK">
+              <span>UK</span>
             </button>
             <button class="pill-country" data-country="JP" title="Japan (BOJ, JPY, Yen)">
-              <span>🇯🇵</span> JPY
+              <img src="/flags/jp.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/jp.png';" class="flag-icon" alt="JPY">
+              <span>JPY</span>
             </button>
             <button class="pill-country" data-country="AU" title="Australia (RBA, AUD, Aussie)">
-              <span>🇦🇺</span> AUD
+              <img src="/flags/au.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/au.png';" class="flag-icon" alt="AUD">
+              <span>AUD</span>
             </button>
             <button class="pill-country" data-country="NZ" title="New Zealand (RBNZ, NZD, Kiwi)">
-              <span>🇳🇿</span> NZD
+              <img src="/flags/nz.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/nz.png';" class="flag-icon" alt="NZD">
+              <span>NZD</span>
             </button>
             <button class="pill-country" data-country="CA" title="Canada (BOC, CAD, Loonie)">
-              <span>🇨🇦</span> CAD
+              <img src="/flags/ca.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/ca.png';" class="flag-icon" alt="CAD">
+              <span>CAD</span>
             </button>
             <button class="pill-country" data-country="CH" title="Switzerland (SNB, CHF, Swiss Franc)">
-              <span>🇨🇭</span> CHF
+              <img src="/flags/ch.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/ch.png';" class="flag-icon" alt="CHF">
+              <span>CHF</span>
             </button>
             <button class="pill-country" data-country="CN" title="China (PBOC, CNY, Yuan)">
-              <span>🇨🇳</span> CNY
+              <img src="/flags/cn.png" onerror="this.onerror=null;this.src='https://flagcdn.com/w40/cn.png';" class="flag-icon" alt="CNY">
+              <span>CNY</span>
             </button>
           </div>
 
@@ -1201,17 +1222,17 @@
     };
 
     const COUNTRY_DISPLAY_INFO = {
-      all: { flag: '🌍', name: 'All Economies', code: 'ALL' },
-      US: { flag: '🇺🇸', name: 'United States', code: 'US' },
-      EU: { flag: '🇪🇺', name: 'Eurozone', code: 'EUR' },
-      UK: { flag: '🇬🇧', name: 'United Kingdom', code: 'UK' },
-      JP: { flag: '🇯🇵', name: 'Japan', code: 'JPY' },
-      AU: { flag: '🇦🇺', name: 'Australia', code: 'AUD' },
-      NZ: { flag: '🇳🇿', name: 'New Zealand', code: 'NZD' },
-      CA: { flag: '🇨🇦', name: 'Canada', code: 'CAD' },
-      CH: { flag: '🇨🇭', name: 'Switzerland', code: 'CHF' },
-      CN: { flag: '🇨🇳', name: 'China', code: 'CNY' },
-      GLOBAL: { flag: '🌍', name: 'Global Wire', code: 'GLOBAL' }
+      all: { flagImg: '', flagCdn: '', flagEmoji: '🌍', name: 'All Economies', code: 'ALL' },
+      US: { flagImg: '/flags/us.png', flagCdn: 'https://flagcdn.com/w40/us.png', flagEmoji: '🇺🇸', name: 'United States', code: 'US' },
+      EU: { flagImg: '/flags/eu.png', flagCdn: 'https://flagcdn.com/w40/eu.png', flagEmoji: '🇪🇺', name: 'Eurozone', code: 'EUR' },
+      UK: { flagImg: '/flags/gb.png', flagCdn: 'https://flagcdn.com/w40/gb.png', flagEmoji: '🇬🇧', name: 'United Kingdom', code: 'UK' },
+      JP: { flagImg: '/flags/jp.png', flagCdn: 'https://flagcdn.com/w40/jp.png', flagEmoji: '🇯🇵', name: 'Japan', code: 'JPY' },
+      AU: { flagImg: '/flags/au.png', flagCdn: 'https://flagcdn.com/w40/au.png', flagEmoji: '🇦🇺', name: 'Australia', code: 'AUD' },
+      NZ: { flagImg: '/flags/nz.png', flagCdn: 'https://flagcdn.com/w40/nz.png', flagEmoji: '🇳🇿', name: 'New Zealand', code: 'NZD' },
+      CA: { flagImg: '/flags/ca.png', flagCdn: 'https://flagcdn.com/w40/ca.png', flagEmoji: '🇨🇦', name: 'Canada', code: 'CAD' },
+      CH: { flagImg: '/flags/ch.png', flagCdn: 'https://flagcdn.com/w40/ch.png', flagEmoji: '🇨🇭', name: 'Switzerland', code: 'CHF' },
+      CN: { flagImg: '/flags/cn.png', flagCdn: 'https://flagcdn.com/w40/cn.png', flagEmoji: '🇨🇳', name: 'China', code: 'CNY' },
+      GLOBAL: { flagImg: '', flagCdn: '', flagEmoji: '🌍', name: 'Global Wire', code: 'GLOBAL' }
     };
 
     // --- Audio Synthesis Alert Engine (Web Audio API) ---
@@ -1529,8 +1550,9 @@
       // Update Sub Status Tag
       let impactText = state.activeImpact === 'all' ? 'All Impacts' : `${state.activeImpact} Impact`;
       let timeText = state.timeFilter === 'today' ? 'Today' : (state.timeFilter === 'week' ? 'This Week' : 'All Time');
-      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flag: '🌍', name: state.activeCountry };
-      let countryText = state.activeCountry === 'all' ? 'All Economies' : `${countryInfo.flag} ${countryInfo.name}`;
+      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: '🌍', name: state.activeCountry };
+      let countryFlagDisplay = countryInfo.flagImg ? `<img src="${countryInfo.flagImg}" onerror="this.onerror=null;this.src='${countryInfo.flagCdn || ''}';" class="flag-icon" style="vertical-align: middle; margin-right: 4px;">` : (countryInfo.flagEmoji + ' ');
+      let countryText = state.activeCountry === 'all' ? '🌍 All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
       document.getElementById('filterStatusBadge').innerHTML = `${timeText} &bull; ${impactText} &bull; ${countryText}`;
 
       document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}`;
@@ -1567,18 +1589,21 @@
           impactIcon = '🟡';
         }
 
+        // Helper to build country badge with real visual flag icon
+        const renderCountryBadge = (c) => {
+          const info = COUNTRY_DISPLAY_INFO[c] || { flagImg: '', flagCdn: '', flagEmoji: '🌍', code: c, name: c };
+          const imgHtml = info.flagImg ? `<img src="${info.flagImg}" onerror="this.onerror=null;this.src='${info.flagCdn || ''}';" class="flag-icon" alt="${info.code}">` : info.flagEmoji;
+          return `<span class="badge-country" title="Economic Region: ${info.name}">${imgHtml} ${info.code}</span>`;
+        };
+
         // Build Country Badges
         let countryBadgesHtml = '';
         if (Array.isArray(item.countries) && item.countries.length > 0 && !item.countries.includes('GLOBAL')) {
-          countryBadgesHtml = item.countries.map(c => {
-            const info = COUNTRY_DISPLAY_INFO[c] || { flag: '🌐', code: c, name: c };
-            return `<span class="badge-country" title="Economic Region: ${info.name}">${info.flag} ${info.code}</span>`;
-          }).join(' ');
+          countryBadgesHtml = item.countries.map(c => renderCountryBadge(c)).join(' ');
         } else if (item.country && item.country !== 'GLOBAL') {
-          const info = COUNTRY_DISPLAY_INFO[item.country] || { flag: item.country_flag || '🌐', code: item.country, name: item.country };
-          countryBadgesHtml = `<span class="badge-country" title="Economic Region: ${info.name}">${info.flag} ${info.code}</span>`;
+          countryBadgesHtml = renderCountryBadge(item.country);
         } else {
-          countryBadgesHtml = `<span class="badge-country" style="opacity: 0.75;" title="Global Macro / Multi-region">🌍 Global</span>`;
+          countryBadgesHtml = `<span class="badge-country" style="opacity: 0.8;" title="Global Macro / Multi-region">🌍 Global</span>`;
         }
 
         return `
