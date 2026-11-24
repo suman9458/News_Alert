@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Vercel Serverless Function: GET /api/news
-Fetches, cleans, filters, and categorizes real-time Gold & Forex news headlines.
-Includes an in-memory cache to prevent feed throttling and ensure fast response times.
+Fetches, cleans, filters, and categorizes real-time Gold, Forex, and Macro news headlines.
+Includes concurrent multi-source fetching and in-memory caching.
 """
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -16,63 +16,59 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from http.server import BaseHTTPRequestHandler
 
-# Sites to watch via Google News RSS
-GOOGLE_NEWS_SITES = [
-    "reuters.com",
-    "forexfactory.com",
-    "moneycontrol.com",
-    "financialjuice.com",
-    "bloomberg.com",
-    "cnbc.com",
-]
-
-GOOGLE_NEWS_TOPICS = ["gold", "forex", "fed"]
-
+# Direct RSS Feeds
 DIRECT_FEEDS = [
+    ("FXStreet", "https://www.fxstreet.com/rss/news"),
+    ("Investing.com", "https://www.investing.com/rss/news_1.rss"),
+    ("Investing.com", "https://www.investing.com/rss/news_11.rss"),
     ("FinancialJuice", "https://www.financialjuice.com/feed.ashx?xy=rss"),
 ]
 
-# Keywords
-RE_GOLD = re.compile(r"\b(gold|xau|xauusd|bullion|precious metals?|silver)\b", re.IGNORECASE)
-RE_FED = re.compile(r"\b(fed|federal reserve|fomc|powell|interest rates?|rate cut|rate hike|inflation|cpi|central bank)\b", re.IGNORECASE)
-RE_FOREX = re.compile(r"\b(forex|fx|eur/usd|eurusd|gbp/usd|usd/jpy|dxy|us dollar|greenback|currencies|currency|yields)\b", re.IGNORECASE)
+# Google News search queries
+GOOGLE_NEWS_QUERIES = [
+    ("Gold Wire", "gold price OR xauusd OR bullion OR silver when:1d"),
+    ("Forex Wire", "forex OR eurusd OR \"us dollar\" OR dxy OR gbpusd OR usdjpy when:1d"),
+    ("Fed & Central Banks", "\"federal reserve\" OR fomc OR powell OR \"interest rate\" OR \"rate cut\" OR inflation when:1d"),
+    ("Reuters", "gold OR forex OR dollar site:reuters.com when:1d"),
+    ("Forex Factory", "forex site:forexfactory.com when:1d"),
+    ("Moneycontrol", "gold OR forex OR dollar site:moneycontrol.com when:1d"),
+    ("FinancialJuice", "site:financialjuice.com when:1d"),
+]
 
-KEYWORDS_FILTER = re.compile(
-    r"\b(gold|xau|xauusd|bullion|silver|forex|fx|eur/?usd|gbp/?usd|usd/?jpy|dxy|fed|fomc|powell|dollar|usd|inflation|rate cut|rate hike)\b",
+# Keywords
+RE_GOLD = re.compile(
+    r"\b(gold|xau|xauusd|bullion|precious metals?|silver|spot gold|gold futures)\b",
+    re.IGNORECASE,
+)
+RE_FED = re.compile(
+    r"\b(fed|federal reserve|fomc|powell|interest rates?|rate cut|rate hike|inflation|cpi|ppi|pmi|gdp|non-?farm|payrolls|warsh|central bank|central banks|ecb|lagarde|boe|bailey|boj|rba)\b",
+    re.IGNORECASE,
+)
+RE_FOREX = re.compile(
+    r"\b(forex|fx|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|usd/?chf|usd/?cad|nzd/?usd|dxy|us dollar|greenback|currencies|currency|yields|treasury|bonds)\b",
     re.IGNORECASE,
 )
 
-# In-memory cache for Vercel warm instances
-CACHE_TTL_SECONDS = 40
+# Broad market filter: captures any news relevant to Gold, Currencies, Central Banks & Macro
+KEYWORDS_FILTER = re.compile(
+    r"\b(gold|xau|xauusd|bullion|silver|forex|fx|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|usd/?chf|usd/?cad|dxy|fed|fomc|powell|dollar|usd|inflation|cpi|rate cut|rate hike|interest rate|central bank|ecb|boe|boj|rba|yields|treasury|economy|market wrap)\b",
+    re.IGNORECASE,
+)
+
+CACHE_TTL_SECONDS = 20
 _cached_data = None
 _cached_time = 0
 
 
-def google_news_url(site, topic):
-    q = urllib.parse.quote(f"{topic} site:{site} when:1d")
+def google_news_url(query):
+    q = urllib.parse.quote(query)
     return f"https://news.google.com/rss/search?q={q}&hl=en-US&gl=US&ceid=US:en"
 
 
 def get_all_feed_configs():
     feeds = list(DIRECT_FEEDS)
-    for site in GOOGLE_NEWS_SITES:
-        # Determine source name from domain
-        name = site.split(".")[0].capitalize()
-        if site == "forexfactory.com":
-            name = "Forex Factory"
-        elif site == "financialjuice.com":
-            name = "FinancialJuice"
-        elif site == "moneycontrol.com":
-            name = "Moneycontrol"
-        elif site == "bloomberg.com":
-            name = "Bloomberg"
-        elif site == "cnbc.com":
-            name = "CNBC"
-        elif site == "reuters.com":
-            name = "Reuters"
-
-        for topic in GOOGLE_NEWS_TOPICS:
-            feeds.append((name, google_news_url(site, topic)))
+    for name, query in GOOGLE_NEWS_QUERIES:
+        feeds.append((name, google_news_url(query)))
     return feeds
 
 
@@ -96,23 +92,21 @@ def determine_category(title):
         return "Fed & Economy"
     if RE_FOREX.search(title):
         return "Forex"
-    return "Market"
+    return "Market Wire"
 
 
 def clean_title_and_source(raw_title, default_source):
     clean = raw_title.strip()
     source = default_source
 
-    # Clean FinancialJuice prefix
     if clean.lower().startswith("financialjuice:"):
         clean = clean[15:].strip()
         source = "FinancialJuice"
 
-    # Extract source from title suffix " - Reuters"
     parts = re.split(r"\s+-\s+([^-]+)$", clean)
     if len(parts) > 1 and parts[1].strip():
         extracted_source = parts[1].strip()
-        if len(extracted_source) < 25:  # avoid false split on long sentences
+        if len(extracted_source) < 25:
             source = extracted_source
             clean = parts[0].strip()
 
@@ -124,12 +118,15 @@ def fetch_feed(source_label, url):
     req = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "application/rss+xml, application/xml, text/xml;q=0.9, */*;q=0.8",
         },
     )
     with urllib.request.urlopen(req, timeout=5) as resp:
         content = resp.read()
         root = ET.fromstring(content)
+
+    is_direct_financial_feed = source_label in ("FXStreet", "FinancialJuice", "Investing.com")
 
     for item in root.iter("item"):
         raw_title = (item.findtext("title") or "").strip()
@@ -142,14 +139,13 @@ def fetch_feed(source_label, url):
 
         clean_title, source = clean_title_and_source(raw_title, source_label)
 
-        # Keyword filter check
-        if not KEYWORDS_FILTER.search(raw_title):
+        # For direct market feeds, allow all items; for general search, apply keyword check
+        if not is_direct_financial_feed and not KEYWORDS_FILTER.search(raw_title):
             continue
 
         epoch, formatted_date = parse_pub_date(pub_date_str)
         category = determine_category(raw_title)
 
-        # Generate a stable short ID
         item_id = hashlib.md5(f"{clean_title.lower()}-{source.lower()}".encode()).hexdigest()[:12]
 
         items.append({
@@ -169,7 +165,6 @@ def get_latest_news():
     global _cached_data, _cached_time
     now = time.time()
 
-    # Serve cached data if still valid
     if _cached_data is not None and (now - _cached_time) < CACHE_TTL_SECONDS:
         return _cached_data
 
@@ -177,7 +172,7 @@ def get_latest_news():
     collected = []
     seen_titles = set()
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         future_to_source = {
             executor.submit(fetch_feed, source_label, url): source_label
             for source_label, url in feed_configs
@@ -193,14 +188,14 @@ def get_latest_news():
             except Exception:
                 continue
 
-    # Sort descending by timestamp
+    # Sort descending by timestamp (newest first)
     collected.sort(key=lambda x: x["timestamp"], reverse=True)
 
     result = {
         "status": "ok",
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": len(collected),
-        "news": collected[:60],  # Return up to 60 top headlines
+        "news": collected[:200],  # Return up to 200 comprehensive headlines
     }
 
     _cached_data = result

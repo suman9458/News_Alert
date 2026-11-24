@@ -311,6 +311,12 @@
       border-color: #3b82f6;
     }
 
+    .filter-tab.tab-alerts.active {
+      background: #dc2626;
+      border-color: #ef4444;
+      color: #fff;
+    }
+
     .filter-tab span.count {
       display: inline-block;
       margin-left: 0.4rem;
@@ -412,11 +418,12 @@
 
     .news-card.card-new {
       border-left: 4px solid var(--accent-green);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
       animation: flashIn 1s ease-out;
     }
 
     @keyframes flashIn {
-      0% { background: rgba(16, 185, 129, 0.2); }
+      0% { background: rgba(16, 185, 129, 0.25); }
       100% { background: var(--bg-surface); }
     }
 
@@ -479,11 +486,11 @@
       color: #000;
       font-size: 0.65rem;
       font-weight: 800;
-      padding: 0.15rem 0.45rem;
+      padding: 0.15rem 0.5rem;
       border-radius: 9999px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      animation: pulse 2s infinite;
+      animation: pulse 1.5s infinite;
     }
 
     .news-time {
@@ -533,7 +540,7 @@
       bottom: 1.5rem;
       right: 1.5rem;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       gap: 0.75rem;
       z-index: 100;
       max-width: 420px;
@@ -704,8 +711,8 @@
         </button>
 
         <select id="selectInterval" class="select-input" title="Auto-refresh frequency">
-          <option value="15000">Poll: 15s</option>
-          <option value="30000" selected>Poll: 30s</option>
+          <option value="15000" selected>Poll: 15s (Fast)</option>
+          <option value="30000">Poll: 30s</option>
           <option value="60000">Poll: 1m</option>
           <option value="120000">Poll: 2m</option>
           <option value="0">Poll: Off</option>
@@ -735,12 +742,12 @@
           <span>🟡</span>
         </div>
         <div id="metricGoldCount" class="metric-value">0</div>
-        <div class="metric-sub">XAU/USD, bullion, physical</div>
+        <div class="metric-sub">XAU/USD, bullion, spot, futures</div>
       </div>
 
       <div class="metric-card metric-forex">
         <div class="metric-title">
-          <span>Forex &amp; FX</span>
+          <span>Forex &amp; Currencies</span>
           <span>🔵</span>
         </div>
         <div id="metricForexCount" class="metric-value">0</div>
@@ -758,7 +765,7 @@
 
       <div class="metric-card metric-alerts">
         <div class="metric-title">
-          <span>Session Alerts</span>
+          <span>Live Incoming Alerts</span>
           <span>🚨</span>
         </div>
         <div id="metricNewCount" class="metric-value">0</div>
@@ -771,6 +778,9 @@
       <div class="filter-tabs">
         <button class="filter-tab active" data-category="all">
           All Headlines <span id="countAll" class="count">0</span>
+        </button>
+        <button class="filter-tab tab-alerts" data-category="alerts_only">
+          🚨 Live Alerts Only <span id="countAlertsOnly" class="count">0</span>
         </button>
         <button class="filter-tab" data-category="Gold">
           🟡 Gold <span id="countGold" class="count">0</span>
@@ -785,7 +795,7 @@
 
       <div class="search-box">
         <span style="margin-right: 0.5rem; opacity: 0.5;">🔍</span>
-        <input type="text" id="searchInput" placeholder="Filter by keyword (e.g. Fed, CPI, XAU)...">
+        <input type="text" id="searchInput" placeholder="Search keywords (e.g. Gold, Fed, CPI)...">
       </div>
     </section>
 
@@ -804,7 +814,7 @@
         <div class="state-card">
           <div class="loading-spinner" style="width: 32px; height: 32px;"></div>
           <h3>Fetching Live Market Intelligence...</h3>
-          <p>Connecting to FinancialJuice, Reuters, Forex Factory, and Bloomberg feeds.</p>
+          <p>Connecting to FXStreet, FinancialJuice, Reuters, Forex Factory, and Bloomberg feeds.</p>
         </div>
       </div>
     </section>
@@ -818,9 +828,10 @@
   <footer>
     <div class="footer-content">
       <div>
-        <strong>Gold &amp; Forex Live Alert System</strong> &bull; Updates in real-time with instant browser and sound alerts.
+        <strong>Gold &amp; Forex Live Alert System</strong> &bull; All breaking headlines streamed in real-time.
       </div>
       <div class="footer-sources">
+        <span>FXStreet</span> &bull; 
         <span>FinancialJuice</span> &bull; 
         <span>Reuters</span> &bull; 
         <span>Forex Factory</span> &bull; 
@@ -834,12 +845,13 @@
     // --- Application State ---
     const state = {
       news: [],
+      sessionAlerts: [],
       seenIds: new Set(),
       activeCategory: 'all',
       searchQuery: '',
       soundEnabled: true,
       desktopNotifEnabled: false,
-      pollInterval: 30000,
+      pollInterval: 15000,
       pollTimer: null,
       progressTimer: null,
       lastPollTime: Date.now(),
@@ -849,7 +861,6 @@
     };
 
     // --- Audio Synthesis Alert Engine (Web Audio API) ---
-    // No external MP3 needed: generates a clean two-tone financial terminal chime
     let audioCtx = null;
 
     function getAudioContext() {
@@ -876,7 +887,6 @@
         const osc2 = ctx.createOscillator();
         const gain = ctx.createGain();
 
-        // Pleasant melodic notification: D5 (587.33 Hz) -> A5 (880.00 Hz)
         osc1.type = 'sine';
         osc1.frequency.setValueAtTime(587.33, now);
         osc1.frequency.exponentialRampToValueAtTime(880, now + 0.12);
@@ -922,7 +932,7 @@
           state.desktopNotifEnabled = true;
           updateNotifUI();
           triggerDesktopNotification({
-            title: 'Desktop alerts enabled!',
+            title: 'Desktop alerts active! You will receive notifications for all incoming news.',
             category: 'Alert System',
             source: 'Radar'
           });
@@ -990,7 +1000,6 @@
         <button class="toast-close" title="Dismiss">&times;</button>
       `;
 
-      // Click to open link
       toast.querySelector('.toast-content').addEventListener('click', () => {
         if (item.link) window.open(item.link, '_blank');
         toast.remove();
@@ -1004,11 +1013,10 @@
       container.appendChild(toast);
       setTimeout(() => toast.classList.add('show'), 20);
 
-      // Auto dismiss after 7 seconds
       setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 400);
-      }, 7000);
+      }, 8000);
     }
 
     // --- Data Fetching Engine ---
@@ -1056,33 +1064,35 @@
             item.is_new = true;
             newArrivalsCount++;
             newlyArrivedItems.push(item);
+            state.sessionAlerts.unshift(item);
           }
         }
       });
 
-      // Update state
-      state.news = incomingNews;
+      if (!isInitialLoad && newlyArrivedItems.length > 0) {
+        state.news = [...newlyArrivedItems, ...state.news];
+      } else if (isInitialLoad) {
+        state.news = incomingNews;
+      }
 
-      // Update Counters
       updateMetrics();
       renderFeed();
 
-      // Trigger Alerts for new items
       if (!isInitialLoad && newArrivalsCount > 0) {
         state.newAlertsInSession += newArrivalsCount;
         state.unreadCount += newArrivalsCount;
         document.getElementById('metricNewCount').textContent = state.newAlertsInSession;
 
-        // Play chime
         playAlertChime();
+        document.title = `(${state.unreadCount} New) 🚨 Market Alert | ${state.originalTitle}`;
 
-        // Update Tab Title
-        document.title = `(${state.unreadCount}) 🚨 NEW ALERTS | ${state.originalTitle}`;
-
-        // Trigger desktop notifications & toasts (limit toasts to first 2 to prevent screen clutter)
-        newlyArrivedItems.slice(0, 2).forEach(item => {
-          showToast(item);
-          triggerDesktopNotification(item);
+        newlyArrivedItems.forEach((item, index) => {
+          setTimeout(() => {
+            triggerDesktopNotification(item);
+            if (index < 4) {
+              showToast(item);
+            }
+          }, index * 350);
         });
       }
     }
@@ -1100,6 +1110,7 @@
       document.getElementById('metricFedCount').textContent = fed;
 
       document.getElementById('countAll').textContent = state.news.length;
+      document.getElementById('countAlertsOnly').textContent = state.sessionAlerts.length;
       document.getElementById('countGold').textContent = gold;
       document.getElementById('countForex').textContent = forex;
       document.getElementById('countFed').textContent = fed;
@@ -1107,12 +1118,12 @@
 
     function renderFeed() {
       const container = document.getElementById('newsFeedList');
-      const filtered = state.news.filter(item => {
-        // Category filter
-        if (state.activeCategory !== 'all' && item.category !== state.activeCategory) {
+      const listToFilter = (state.activeCategory === 'alerts_only') ? state.sessionAlerts : state.news;
+
+      const filtered = listToFilter.filter(item => {
+        if (state.activeCategory !== 'all' && state.activeCategory !== 'alerts_only' && item.category !== state.activeCategory) {
           return false;
         }
-        // Search filter
         if (state.searchQuery) {
           const q = state.searchQuery.toLowerCase();
           const matchTitle = item.title.toLowerCase().includes(q);
@@ -1125,6 +1136,16 @@
       document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}`;
 
       if (filtered.length === 0) {
+        if (state.activeCategory === 'alerts_only') {
+          container.innerHTML = `
+            <div class="state-card">
+              <div class="icon">🔔</div>
+              <h3>Waiting for live incoming alerts...</h3>
+              <p>Keep this tab open. Any new headline detected during your session will appear here instantly!</p>
+            </div>
+          `;
+          return;
+        }
         container.innerHTML = `
           <div class="state-card">
             <div class="icon">🔍</div>
@@ -1148,7 +1169,7 @@
               <div class="meta-left">
                 <span class="badge-category ${catClass}">${escapeHtml(item.category)}</span>
                 <span class="badge-source">${escapeHtml(item.source)}</span>
-                ${item.is_new ? '<span class="badge-new-pill">✨ NEW</span>' : ''}
+                ${item.is_new ? '<span class="badge-new-pill">✨ LIVE ALERT</span>' : ''}
               </div>
               <span class="news-time" title="${escapeHtml(item.pubDate || '')}">${timeAgo}</span>
             </div>
@@ -1186,7 +1207,6 @@
       }
     }
 
-    // --- Helpers ---
     function formatTimeAgo(timestamp) {
       if (!timestamp) return 'recently';
       const seconds = Math.floor((Date.now() / 1000) - timestamp);
@@ -1200,7 +1220,7 @@
     }
 
     function highlightKeywords(text) {
-      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|Rate Cut|Rate Hike)\b/gi;
+      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|Rate Cut|Rate Hike|ECB|BOE|BOJ)\b/gi;
       return text.replace(regex, match => `<strong style="color: #60a5fa; font-weight: 700;">${match}</strong>`);
     }
 
@@ -1225,7 +1245,6 @@
       });
     };
 
-    // --- Timers & Progress Bar ---
     function resetProgressTimer() {
       state.lastPollTime = Date.now();
       clearInterval(state.progressTimer);
@@ -1240,7 +1259,7 @@
         const remaining = Math.max(0, state.pollInterval - elapsed);
         const pct = Math.min(100, (remaining / state.pollInterval) * 100);
         document.getElementById('refreshProgressBar').style.width = `${pct}%`;
-      }, 150);
+      }, 100);
     }
 
     function setupPollInterval() {
@@ -1251,13 +1270,11 @@
       resetProgressTimer();
     }
 
-    // --- Event Listeners ---
     document.addEventListener('DOMContentLoaded', () => {
       initNotifications();
       fetchNewsData();
       setupPollInterval();
 
-      // Sound Toggle Button
       document.getElementById('btnSoundToggle').addEventListener('click', () => {
         state.soundEnabled = !state.soundEnabled;
         const btn = document.getElementById('btnSoundToggle');
@@ -1276,7 +1293,6 @@
         }
       });
 
-      // Test Chime Button
       document.getElementById('btnTestSound').addEventListener('click', () => {
         getAudioContext();
         playAlertChime();
@@ -1287,23 +1303,19 @@
         });
       });
 
-      // Desktop Notification Button
       document.getElementById('btnNotifToggle').addEventListener('click', () => {
         requestNotificationPermission();
       });
 
-      // Interval Select
       document.getElementById('selectInterval').addEventListener('change', (e) => {
         state.pollInterval = parseInt(e.target.value, 10);
         setupPollInterval();
       });
 
-      // Refresh Button
       document.getElementById('btnRefresh').addEventListener('click', () => {
         fetchNewsData();
       });
 
-      // Category Tabs
       document.querySelectorAll('.filter-tab').forEach(tab => {
         tab.addEventListener('click', () => {
           document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -1313,19 +1325,16 @@
         });
       });
 
-      // Search Box
       document.getElementById('searchInput').addEventListener('input', (e) => {
         state.searchQuery = e.target.value.trim();
         renderFeed();
       });
 
-      // Reset Unread Title on Focus
       window.addEventListener('focus', () => {
         state.unreadCount = 0;
         document.title = state.originalTitle;
       });
 
-      // Unlock AudioContext on first click anywhere
       document.addEventListener('click', () => {
         getAudioContext();
       }, { once: true });
