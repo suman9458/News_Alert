@@ -217,58 +217,130 @@
       gap: 1.5rem;
     }
 
-    /* Metric Summary Cards */
+    /* 4 Interactive Impact Category Boxes */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1rem;
     }
 
     .metric-card {
       background: var(--bg-surface);
-      border: 1px solid var(--border-color);
+      border: 2px solid var(--border-color);
       border-radius: 12px;
-      padding: 1rem 1.25rem;
+      padding: 1.1rem 1.3rem;
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      user-select: none;
     }
 
     .metric-card:hover {
-      transform: translateY(-2px);
-      border-color: #334155;
+      transform: translateY(-3px);
+      border-color: #475569;
     }
 
-    .metric-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+    .metric-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
+    .metric-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
     .metric-value {
-      font-size: 1.7rem;
+      font-size: 2rem;
       font-weight: 800;
       font-family: 'JetBrains Mono', monospace;
       color: #fff;
+      line-height: 1.1;
     }
 
     .metric-sub {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       color: var(--text-dim);
     }
 
-    .metric-gold .metric-value { color: var(--accent-gold); }
-    .metric-forex .metric-value { color: var(--accent-cyan); }
-    .metric-fed .metric-value { color: var(--accent-purple); }
-    .metric-alerts .metric-value { color: var(--accent-red); }
+    .metric-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.2rem;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
 
-    /* Filter & Search Bar */
+    /* Box 1: High Impact */
+    .metric-high .metric-value { color: #f87171; }
+    .metric-high:hover { border-color: #ef4444; }
+    .metric-high.active {
+      border-color: #ef4444;
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.12), var(--bg-surface));
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+    }
+
+    /* Box 2: Medium Impact */
+    .metric-medium .metric-value { color: #fbbf24; }
+    .metric-medium:hover { border-color: #f59e0b; }
+    .metric-medium.active {
+      border-color: #f59e0b;
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.12), var(--bg-surface));
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+    }
+
+    /* Box 3: Low Impact */
+    .metric-low .metric-value { color: #34d399; }
+    .metric-low:hover { border-color: #10b981; }
+    .metric-low.active {
+      border-color: #10b981;
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), var(--bg-surface));
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Box 4: All News */
+    .metric-all .metric-value { color: #60a5fa; }
+    .metric-all:hover { border-color: #3b82f6; }
+    .metric-all.active {
+      border-color: #3b82f6;
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.12), var(--bg-surface));
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+    }
+
+    /* Active Indicator Pill on Box */
+    .metric-active-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .metric-card.active .metric-active-pill {
+      opacity: 1;
+    }
+
+    .metric-high .metric-active-pill { background: #ef4444; color: #fff; }
+    .metric-medium .metric-active-pill { background: #f59e0b; color: #000; }
+    .metric-low .metric-active-pill { background: #10b981; color: #000; }
+    .metric-all .metric-active-pill { background: #3b82f6; color: #fff; }
+
+    /* 2nd Image: Filter & Search Bar */
     .filter-bar {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
@@ -289,7 +361,7 @@
     }
 
     .filter-tab {
-      padding: 0.4rem 0.85rem;
+      padding: 0.45rem 0.9rem;
       border-radius: 8px;
       font-size: 0.82rem;
       font-weight: 600;
@@ -438,13 +510,42 @@
     .meta-left {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Badges */
+    .badge-impact {
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .impact-high {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .impact-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .impact-low {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
     .badge-category {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 700;
-      padding: 0.2rem 0.6rem;
+      padding: 0.2rem 0.55rem;
       border-radius: 6px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -734,46 +835,74 @@
   <!-- Main Content Body -->
   <main>
 
-    <!-- Metrics Summary Cards -->
+    <!-- 4 Interactive Impact Category Boxes (Click to filter) -->
     <section class="metrics-grid">
-      <div class="metric-card metric-gold">
-        <div class="metric-title">
-          <span>Gold &amp; Bullion</span>
-          <span>🟡</span>
+      <!-- Box 1: High Impact -->
+      <div id="boxHigh" class="metric-card metric-high" data-impact="High" title="Click to show High Impact news only">
+        <div class="metric-card-header">
+          <div class="metric-title">
+            <span>🔴 High Impact News</span>
+          </div>
+          <span class="metric-active-pill">Active</span>
         </div>
-        <div id="metricGoldCount" class="metric-value">0</div>
-        <div class="metric-sub">XAU/USD, bullion, spot, futures</div>
+        <div id="metricHighCount" class="metric-value">0</div>
+        <div class="metric-sub">CPI, NFP, Fed cuts/hikes, war, breakouts</div>
+        <div class="metric-card-footer">
+          <span>Click to filter</span>
+          <span>Market Movers ⚡</span>
+        </div>
       </div>
 
-      <div class="metric-card metric-forex">
-        <div class="metric-title">
-          <span>Forex &amp; Currencies</span>
-          <span>🔵</span>
+      <!-- Box 2: Medium Impact -->
+      <div id="boxMedium" class="metric-card metric-medium" data-impact="Medium" title="Click to show Medium Impact news only">
+        <div class="metric-card-header">
+          <div class="metric-title">
+            <span>🟡 Medium Impact News</span>
+          </div>
+          <span class="metric-active-pill">Active</span>
         </div>
-        <div id="metricForexCount" class="metric-value">0</div>
-        <div class="metric-sub">EUR, GBP, JPY, DXY, Dollar</div>
+        <div id="metricMediumCount" class="metric-value">0</div>
+        <div class="metric-sub">PMI, Retail Sales, Fed speakers, Yields</div>
+        <div class="metric-card-footer">
+          <span>Click to filter</span>
+          <span>Secondary Drivers 📊</span>
+        </div>
       </div>
 
-      <div class="metric-card metric-fed">
-        <div class="metric-title">
-          <span>Fed &amp; Rates</span>
-          <span>🏛️</span>
+      <!-- Box 3: Low Impact -->
+      <div id="boxLow" class="metric-card metric-low" data-impact="Low" title="Click to show Low Impact news only">
+        <div class="metric-card-header">
+          <div class="metric-title">
+            <span>🟢 Low Impact News</span>
+          </div>
+          <span class="metric-active-pill">Active</span>
         </div>
-        <div id="metricFedCount" class="metric-value">0</div>
-        <div class="metric-sub">FOMC, Powell, Inflation, Rates</div>
+        <div id="metricLowCount" class="metric-value">0</div>
+        <div class="metric-sub">Housing, forecasts, technical commentary</div>
+        <div class="metric-card-footer">
+          <span>Click to filter</span>
+          <span>Informational ℹ️</span>
+        </div>
       </div>
 
-      <div class="metric-card metric-alerts">
-        <div class="metric-title">
-          <span>Live Incoming Alerts</span>
-          <span>🚨</span>
+      <!-- Box 4: All News -->
+      <div id="boxAll" class="metric-card metric-all active" data-impact="all" title="Click to show All News">
+        <div class="metric-card-header">
+          <div class="metric-title">
+            <span>⚡ All News</span>
+          </div>
+          <span class="metric-active-pill">Active</span>
         </div>
-        <div id="metricNewCount" class="metric-value">0</div>
-        <div class="metric-sub">New headlines detected live</div>
+        <div id="metricAllCount" class="metric-value">0</div>
+        <div class="metric-sub">Complete live stream of all headlines</div>
+        <div class="metric-card-footer">
+          <span>Click to filter</span>
+          <span>Full Stream 🌐</span>
+        </div>
       </div>
     </section>
 
-    <!-- Filter & Search Controls -->
+    <!-- 2nd Image: Filter & Search Bar (Kept intact with full category navigation) -->
     <section class="filter-bar">
       <div class="filter-tabs">
         <button class="filter-tab active" data-category="all">
@@ -828,7 +957,7 @@
   <footer>
     <div class="footer-content">
       <div>
-        <strong>Gold &amp; Forex Live Alert System</strong> &bull; All breaking headlines streamed in real-time.
+        <strong>Gold &amp; Forex Live Alert System</strong> &bull; Classified by High, Medium, and Low impact.
       </div>
       <div class="footer-sources">
         <span>FXStreet</span> &bull; 
@@ -847,7 +976,8 @@
       news: [],
       sessionAlerts: [],
       seenIds: new Set(),
-      activeCategory: 'all',
+      activeImpact: 'all',     // 'all' | 'High' | 'Medium' | 'Low' (from the 4 top boxes)
+      activeCategory: 'all',   // 'all' | 'alerts_only' | 'Gold' | 'Forex' | 'Fed & Economy' (from 2nd image tabs)
       searchQuery: '',
       soundEnabled: true,
       desktopNotifEnabled: false,
@@ -934,6 +1064,7 @@
           triggerDesktopNotification({
             title: 'Desktop alerts active! You will receive notifications for all incoming news.',
             category: 'Alert System',
+            impact: 'High',
             source: 'Radar'
           });
         } else {
@@ -964,8 +1095,9 @@
         return;
       }
       try {
-        const notif = new Notification(`🚨 ${item.category} Alert: ${item.source}`, {
-          body: item.title,
+        const impactEmoji = item.impact === 'High' ? '🔴' : (item.impact === 'Medium' ? '🟡' : '🟢');
+        const notif = new Notification(`${impactEmoji} [${item.impact} Impact] ${item.category} Alert`, {
+          body: `${item.source}: ${item.title}`,
           icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>',
           tag: item.id || Date.now(),
         });
@@ -986,15 +1118,20 @@
       const toast = document.createElement('div');
       toast.className = 'toast';
 
-      let catIcon = '⚡';
-      if (item.category === 'Gold') catIcon = '🟡';
-      else if (item.category === 'Forex') catIcon = '🔵';
-      else if (item.category === 'Fed & Economy') catIcon = '🏛️';
+      let impactClass = 'impact-high';
+      let impactEmoji = '🔴';
+      if (item.impact === 'Medium') {
+        impactClass = 'impact-medium';
+        impactEmoji = '🟡';
+      } else if (item.impact === 'Low') {
+        impactClass = 'impact-low';
+        impactEmoji = '🟢';
+      }
 
       toast.innerHTML = `
-        <div class="toast-icon">${catIcon}</div>
+        <div class="toast-icon">${impactEmoji}</div>
         <div class="toast-content" style="flex: 1; cursor: pointer;">
-          <h4>NEW ${item.category.toUpperCase()} ALERT &bull; ${item.source}</h4>
+          <h4>${item.impact.toUpperCase()} IMPACT &bull; ${item.source}</h4>
           <p>${escapeHtml(item.title)}</p>
         </div>
         <button class="toast-close" title="Dismiss">&times;</button>
@@ -1081,7 +1218,6 @@
       if (!isInitialLoad && newArrivalsCount > 0) {
         state.newAlertsInSession += newArrivalsCount;
         state.unreadCount += newArrivalsCount;
-        document.getElementById('metricNewCount').textContent = state.newAlertsInSession;
 
         playAlertChime();
         document.title = `(${state.unreadCount} New) 🚨 Market Alert | ${state.originalTitle}`;
@@ -1098,17 +1234,28 @@
     }
 
     function updateMetrics() {
+      let high = 0, medium = 0, low = 0;
       let gold = 0, forex = 0, fed = 0;
+
       state.news.forEach(item => {
+        // Impact counts
+        if (item.impact === 'High') high++;
+        else if (item.impact === 'Medium') medium++;
+        else low++;
+
+        // Category counts
         if (item.category === 'Gold') gold++;
         else if (item.category === 'Forex') forex++;
         else if (item.category === 'Fed & Economy') fed++;
       });
 
-      document.getElementById('metricGoldCount').textContent = gold;
-      document.getElementById('metricForexCount').textContent = forex;
-      document.getElementById('metricFedCount').textContent = fed;
+      // 4 Top Boxes
+      document.getElementById('metricHighCount').textContent = high;
+      document.getElementById('metricMediumCount').textContent = medium;
+      document.getElementById('metricLowCount').textContent = low;
+      document.getElementById('metricAllCount').textContent = state.news.length;
 
+      // 2nd Image: Category Tabs
       document.getElementById('countAll').textContent = state.news.length;
       document.getElementById('countAlertsOnly').textContent = state.sessionAlerts.length;
       document.getElementById('countGold').textContent = gold;
@@ -1121,9 +1268,17 @@
       const listToFilter = (state.activeCategory === 'alerts_only') ? state.sessionAlerts : state.news;
 
       const filtered = listToFilter.filter(item => {
+        // 1. Filter by Impact Level (from 4 top boxes)
+        if (state.activeImpact !== 'all' && item.impact !== state.activeImpact) {
+          return false;
+        }
+
+        // 2. Filter by Category (from 2nd image tabs)
         if (state.activeCategory !== 'all' && state.activeCategory !== 'alerts_only' && item.category !== state.activeCategory) {
           return false;
         }
+
+        // 3. Search query
         if (state.searchQuery) {
           const q = state.searchQuery.toLowerCase();
           const matchTitle = item.title.toLowerCase().includes(q);
@@ -1133,24 +1288,19 @@
         return true;
       });
 
-      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}`;
+      let impactLabel = state.activeImpact === 'all' ? '' : ` (${state.activeImpact} Impact Only)`;
+      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}${impactLabel}`;
 
       if (filtered.length === 0) {
+        let msg = 'No headlines match your current filters';
         if (state.activeCategory === 'alerts_only') {
-          container.innerHTML = `
-            <div class="state-card">
-              <div class="icon">🔔</div>
-              <h3>Waiting for live incoming alerts...</h3>
-              <p>Keep this tab open. Any new headline detected during your session will appear here instantly!</p>
-            </div>
-          `;
-          return;
+          msg = 'No live incoming alerts match your selected impact level yet.';
         }
         container.innerHTML = `
           <div class="state-card">
             <div class="icon">🔍</div>
-            <h3>No headlines match your filter</h3>
-            <p>Try switching categories or clearing your search term "${escapeHtml(state.searchQuery)}".</p>
+            <h3>${msg}</h3>
+            <p>Try switching impact categories or clearing search filters.</p>
           </div>
         `;
         return;
@@ -1163,10 +1313,21 @@
         else if (item.category === 'Forex') catClass = 'cat-forex';
         else if (item.category === 'Fed & Economy') catClass = 'cat-fed';
 
+        let impactClass = 'impact-low';
+        let impactIcon = '🟢';
+        if (item.impact === 'High') {
+          impactClass = 'impact-high';
+          impactIcon = '🔴';
+        } else if (item.impact === 'Medium') {
+          impactClass = 'impact-medium';
+          impactIcon = '🟡';
+        }
+
         return `
           <article class="news-card ${item.is_new ? 'card-new' : ''}">
             <div class="news-card-meta">
               <div class="meta-left">
+                <span class="badge-impact ${impactClass}">${impactIcon} ${escapeHtml(item.impact.toUpperCase())}</span>
                 <span class="badge-category ${catClass}">${escapeHtml(item.category)}</span>
                 <span class="badge-source">${escapeHtml(item.source)}</span>
                 ${item.is_new ? '<span class="badge-new-pill">✨ LIVE ALERT</span>' : ''}
@@ -1220,7 +1381,7 @@
     }
 
     function highlightKeywords(text) {
-      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|Rate Cut|Rate Hike|ECB|BOE|BOJ)\b/gi;
+      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|CPI|PPI|NFP|Payrolls|Rate Cut|Rate Hike|ECB|BOE|BOJ)\b/gi;
       return text.replace(regex, match => `<strong style="color: #60a5fa; font-weight: 700;">${match}</strong>`);
     }
 
@@ -1241,7 +1402,7 @@
 
     window.copyToClipboard = function(text) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast({ title: 'Copied headline to clipboard!', category: 'Clipboard', source: 'System' });
+        showToast({ title: 'Copied headline to clipboard!', category: 'Clipboard', impact: 'Low', source: 'System' });
       });
     };
 
@@ -1275,6 +1436,25 @@
       fetchNewsData();
       setupPollInterval();
 
+      // Top 4 Impact Category Boxes Click Handlers
+      const impactBoxes = [
+        { el: document.getElementById('boxHigh'), impact: 'High' },
+        { el: document.getElementById('boxMedium'), impact: 'Medium' },
+        { el: document.getElementById('boxLow'), impact: 'Low' },
+        { el: document.getElementById('boxAll'), impact: 'all' },
+      ];
+
+      impactBoxes.forEach(({ el, impact }) => {
+        if (!el) return;
+        el.addEventListener('click', () => {
+          impactBoxes.forEach(b => b.el.classList.remove('active'));
+          el.classList.add('active');
+          state.activeImpact = impact;
+          renderFeed();
+        });
+      });
+
+      // Sound Toggle Button
       document.getElementById('btnSoundToggle').addEventListener('click', () => {
         state.soundEnabled = !state.soundEnabled;
         const btn = document.getElementById('btnSoundToggle');
@@ -1293,29 +1473,35 @@
         }
       });
 
+      // Test Sound Button
       document.getElementById('btnTestSound').addEventListener('click', () => {
         getAudioContext();
         playAlertChime();
         showToast({
           title: 'Sound alert preview chime played!',
           category: 'Audio Engine',
+          impact: 'High',
           source: 'System'
         });
       });
 
+      // Desktop Notification Button
       document.getElementById('btnNotifToggle').addEventListener('click', () => {
         requestNotificationPermission();
       });
 
+      // Interval Select
       document.getElementById('selectInterval').addEventListener('change', (e) => {
         state.pollInterval = parseInt(e.target.value, 10);
         setupPollInterval();
       });
 
+      // Manual Refresh Button
       document.getElementById('btnRefresh').addEventListener('click', () => {
         fetchNewsData();
       });
 
+      // 2nd Image: Category Tabs Click Handlers (All, Live Alerts, Gold, Forex, Fed)
       document.querySelectorAll('.filter-tab').forEach(tab => {
         tab.addEventListener('click', () => {
           document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -1325,11 +1511,13 @@
         });
       });
 
+      // Search Box Input
       document.getElementById('searchInput').addEventListener('input', (e) => {
         state.searchQuery = e.target.value.trim();
         renderFeed();
       });
 
+      // Window focus unread title reset
       window.addEventListener('focus', () => {
         state.unreadCount = 0;
         document.title = state.originalTitle;

@@ -2,7 +2,7 @@
 """
 Vercel Serverless Function: GET /api/news
 Fetches, cleans, filters, and categorizes real-time Gold, Forex, and Macro news headlines.
-Includes concurrent multi-source fetching and in-memory caching.
+Includes High / Medium / Low impact classification for professional trading.
 """
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -35,7 +35,7 @@ GOOGLE_NEWS_QUERIES = [
     ("FinancialJuice", "site:financialjuice.com when:1d"),
 ]
 
-# Keywords
+# Asset Category Regex
 RE_GOLD = re.compile(
     r"\b(gold|xau|xauusd|bullion|precious metals?|silver|spot gold|gold futures)\b",
     re.IGNORECASE,
@@ -49,9 +49,20 @@ RE_FOREX = re.compile(
     re.IGNORECASE,
 )
 
-# Broad market filter: captures any news relevant to Gold, Currencies, Central Banks & Macro
+# Broad market filter
 KEYWORDS_FILTER = re.compile(
     r"\b(gold|xau|xauusd|bullion|silver|forex|fx|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|usd/?chf|usd/?cad|dxy|fed|fomc|powell|dollar|usd|inflation|cpi|rate cut|rate hike|interest rate|central bank|ecb|boe|boj|rba|yields|treasury|economy|market wrap)\b",
+    re.IGNORECASE,
+)
+
+# Impact Classification Regex
+RE_HIGH_IMPACT = re.compile(
+    r"\b(cpi|inflation|nfp|non-?farm|payrolls|unemployment rate|gdp|core pce|rate cut|rate hike|interest rate decision|fomc statement|fomc decision|powell|fomc|warsh|lagarde|bailey|ueda|record high|all-time high|plunges|surges|spikes|crashes|slumps|selloff|rout|war|missile|attack|sanctions?|tariffs?|emergency|intervention|bailout)\b",
+    re.IGNORECASE,
+)
+
+RE_MEDIUM_IMPACT = re.compile(
+    r"\b(pmi|ppi|retail sales|jobless claims|consumer sentiment|consumer confidence|durable goods|ism|trade balance|trade deficit|fed\'?s|williams|waller|bowman|bostic|kashkari|barkin|daly|musalem|centeno|villeroy|nagel|crude|oil|opec|treasury yields?|10-year yield|bond yields?|dxy|dollar index|us dollar|hike bets|cut bets)\b",
     re.IGNORECASE,
 )
 
@@ -93,6 +104,14 @@ def determine_category(title):
     if RE_FOREX.search(title):
         return "Forex"
     return "Market Wire"
+
+
+def determine_impact(title):
+    if RE_HIGH_IMPACT.search(title):
+        return "High"
+    if RE_MEDIUM_IMPACT.search(title):
+        return "Medium"
+    return "Low"
 
 
 def clean_title_and_source(raw_title, default_source):
@@ -139,12 +158,12 @@ def fetch_feed(source_label, url):
 
         clean_title, source = clean_title_and_source(raw_title, source_label)
 
-        # For direct market feeds, allow all items; for general search, apply keyword check
         if not is_direct_financial_feed and not KEYWORDS_FILTER.search(raw_title):
             continue
 
         epoch, formatted_date = parse_pub_date(pub_date_str)
         category = determine_category(raw_title)
+        impact = determine_impact(raw_title)
 
         item_id = hashlib.md5(f"{clean_title.lower()}-{source.lower()}".encode()).hexdigest()[:12]
 
@@ -155,6 +174,7 @@ def fetch_feed(source_label, url):
             "link": link,
             "source": source,
             "category": category,
+            "impact": impact,
             "pubDate": formatted_date,
             "timestamp": epoch,
         })
@@ -195,7 +215,7 @@ def get_latest_news():
         "status": "ok",
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": len(collected),
-        "news": collected[:200],  # Return up to 200 comprehensive headlines
+        "news": collected[:200],
     }
 
     _cached_data = result
