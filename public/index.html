@@ -280,6 +280,7 @@
 
     .metric-gold .metric-value { color: var(--accent-gold); }
     .metric-forex .metric-value { color: var(--accent-cyan); }
+    .metric-crypto .metric-value { color: #c084fc; }
     .metric-fed .metric-value { color: var(--accent-purple); }
     .metric-alerts .metric-value { color: var(--accent-red); }
 
@@ -683,6 +684,12 @@
       border: 1px solid rgba(56, 189, 248, 0.3);
     }
 
+    .cat-crypto {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
     .cat-fed {
       background: rgba(168, 85, 247, 0.15);
       color: var(--accent-purple);
@@ -1005,6 +1012,17 @@
         <div class="metric-sub">EUR, GBP, JPY, DXY, Dollar</div>
       </div>
 
+      <div id="cardCrypto" class="metric-card metric-crypto" data-category="Crypto" title="Click to view Crypto headlines">
+        <div class="metric-card-header">
+          <div class="metric-title">
+            <span>Crypto &amp; Web3</span>
+          </div>
+          <span>🟣</span>
+        </div>
+        <div id="metricCryptoCount" class="metric-value">0</div>
+        <div class="metric-sub">BTC, ETH, Solana, On-Chain</div>
+      </div>
+
       <div id="cardFed" class="metric-card metric-fed" data-category="Fed & Economy" title="Click to view Fed & Economy headlines">
         <div class="metric-card-header">
           <div class="metric-title">
@@ -1049,6 +1067,9 @@
           <button class="filter-tab" data-category="Forex">
             🔵 Forex <span id="countForex" class="count">0</span>
           </button>
+          <button class="filter-tab" data-category="Crypto">
+            🟣 Crypto <span id="countCrypto" class="count">0</span>
+          </button>
           <button class="filter-tab" data-category="Fed & Economy">
             🏛️ Fed / Rates <span id="countFed" class="count">0</span>
           </button>
@@ -1057,7 +1078,7 @@
         <!-- Search Bar -->
         <div class="search-box">
           <span style="margin-right: 0.5rem; opacity: 0.5;">🔍</span>
-          <input type="text" id="searchInput" placeholder="Search keywords (e.g. Gold, Fed, CPI)...">
+          <input type="text" id="searchInput" placeholder="Search keywords (e.g. Gold, Fed, Bitcoin, CPI)...">
         </div>
       </div>
 
@@ -1175,12 +1196,31 @@
         <strong>Gold &amp; Forex Live Alert System</strong> &bull; Complete economic calendar &amp; impact filtering.
       </div>
       <div class="footer-sources">
-        <span>FXStreet</span> &bull; 
-        <span>FinancialJuice</span> &bull; 
         <span>Reuters</span> &bull; 
-        <span>Forex Factory</span> &bull; 
         <span>Bloomberg</span> &bull; 
-        <span>Moneycontrol</span>
+        <span>CNBC</span> &bull; 
+        <span>Financial Times</span> &bull; 
+        <span>TradingView</span> &bull; 
+        <span>FXStreet</span> &bull; 
+        <span>ForexLive</span> &bull; 
+        <span>DailyFX</span> &bull; 
+        <span>Forex Factory</span> &bull; 
+        <span>Investing.com</span> &bull; 
+        <span>CoinDesk</span> &bull; 
+        <span>The Block</span> &bull; 
+        <span>Cointelegraph</span> &bull; 
+        <span>Decrypt</span> &bull; 
+        <span>CoinGecko</span> &bull; 
+        <span>CoinMarketCap</span> &bull; 
+        <span>Glassnode</span> &bull; 
+        <span>Kitco</span> &bull; 
+        <span>World Gold Council</span> &bull; 
+        <span>LBMA</span> &bull; 
+        <span>MCX</span> &bull; 
+        <span>Federal Reserve</span> &bull; 
+        <span>ECB</span> &bull; 
+        <span>RBI</span> &bull; 
+        <span>BLS</span>
       </div>
     </div>
   </footer>
@@ -1473,17 +1513,21 @@
     }
 
     function updateMetrics() {
-      let gold = 0, forex = 0, fed = 0;
+      let gold = 0, forex = 0, crypto = 0, fed = 0;
 
       state.news.forEach(item => {
         if (item.category === 'Gold') gold++;
         else if (item.category === 'Forex') forex++;
+        else if (item.category === 'Crypto') crypto++;
         else if (item.category === 'Fed & Economy') fed++;
       });
 
-      // Top 4 overview cards
+      // Top overview cards
       document.getElementById('metricGoldCount').textContent = gold;
       document.getElementById('metricForexCount').textContent = forex;
+      if (document.getElementById('metricCryptoCount')) {
+        document.getElementById('metricCryptoCount').textContent = crypto;
+      }
       document.getElementById('metricFedCount').textContent = fed;
       document.getElementById('metricNewCount').textContent = state.sessionAlerts.length;
 
@@ -1492,6 +1536,9 @@
       document.getElementById('countAlertsOnly').textContent = state.sessionAlerts.length;
       document.getElementById('countGold').textContent = gold;
       document.getElementById('countForex').textContent = forex;
+      if (document.getElementById('countCrypto')) {
+        document.getElementById('countCrypto').textContent = crypto;
+      }
       document.getElementById('countFed').textContent = fed;
     }
 
@@ -1577,6 +1624,7 @@
         let catClass = 'cat-market';
         if (item.category === 'Gold') catClass = 'cat-gold';
         else if (item.category === 'Forex') catClass = 'cat-forex';
+        else if (item.category === 'Crypto') catClass = 'cat-crypto';
         else if (item.category === 'Fed & Economy') catClass = 'cat-fed';
 
         let impactClass = 'impact-low';
@@ -1665,7 +1713,7 @@
     }
 
     function highlightKeywords(text) {
-      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|CPI|PPI|NFP|Payrolls|Rate Cut|Rate Hike|ECB|BOE|BOJ)\b/gi;
+      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|Bitcoin|BTC|Ethereum|ETH|Solana|Crypto|Blockchain|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|CPI|PPI|NFP|Payrolls|Rate Cut|Rate Hike|ECB|BOE|BOJ|RBI|BLS|Kitco|MCX)\b/gi;
       return text.replace(regex, match => `<strong style="color: #60a5fa; font-weight: 700;">${match}</strong>`);
     }
 

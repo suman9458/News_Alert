@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """
 Vercel Serverless Function: GET /api/news
-Fetches, cleans, filters, and categorizes real-time Gold, Forex, and Macro news headlines.
+Exclusively fetches, cleans, filters, and categorizes news headlines from 25 approved sources:
+1. Reuters, 2. Bloomberg, 3. CNBC, 4. Financial Times, 5. TradingView
+6. FXStreet, 7. ForexLive, 8. DailyFX, 9. Forex Factory, 10. Investing.com
+11. CoinDesk, 12. The Block, 13. Cointelegraph, 14. Decrypt, 15. CoinGecko, 16. CoinMarketCap, 17. Glassnode
+18. Kitco, 19. World Gold Council, 20. LBMA, 21. MCX
+22. Federal Reserve, 23. ECB, 24. RBI, 25. BLS
+
 Includes High / Medium / Low impact classification and Country-wise economic tagging.
 """
 
@@ -16,34 +22,97 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from http.server import BaseHTTPRequestHandler
 
-# Direct RSS Feeds
-DIRECT_FEEDS = [
+def _gnews_url(q):
+    return f"https://news.google.com/rss/search?q={urllib.parse.quote(q)}&hl=en-US&gl=US&ceid=US:en"
+
+# The 25 specific sources requested by the user
+CURATED_FEED_CONFIGS = [
+    # General (Forex, Crypto, Gold, Macro)
+    ("Reuters", _gnews_url("site:reuters.com (gold OR forex OR dollar OR crypto OR fed) when:2d")),
+    ("Bloomberg", _gnews_url("site:bloomberg.com (gold OR forex OR dollar OR crypto OR fed) when:2d")),
+    ("CNBC", _gnews_url("site:cnbc.com (gold OR currencies OR dollar OR crypto OR fed) when:2d")),
+    ("Financial Times", _gnews_url("site:ft.com (gold OR forex OR dollar OR crypto OR fed) when:2d")),
+    ("TradingView", _gnews_url("site:tradingview.com/news when:3d")),
+
+    # Forex
     ("FXStreet", "https://www.fxstreet.com/rss/news"),
+    ("ForexLive", _gnews_url("site:forexlive.com OR \"ForexLive\" OR site:investinglive.com when:3d")),
+    ("DailyFX", _gnews_url("(\"DailyFX\" OR site:dailyfx.com OR site:ig.com/dailyfx) when:5d")),
+    ("Forex Factory", _gnews_url("site:forexfactory.com/news when:3d")),
     ("Investing.com", "https://www.investing.com/rss/news_1.rss"),
-    ("Investing.com", "https://www.investing.com/rss/news_11.rss"),
-    ("FinancialJuice", "https://www.financialjuice.com/feed.ashx?xy=rss"),
+
+    # Crypto
+    ("CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"),
+    ("The Block", "https://www.theblock.co/rss.xml"),
+    ("Cointelegraph", "https://cointelegraph.com/rss"),
+    ("Decrypt", "https://decrypt.co/feed"),
+    ("CoinGecko", _gnews_url("site:coingecko.com when:3d")),
+    ("CoinMarketCap", _gnews_url("site:coinmarketcap.com when:3d")),
+    ("Glassnode", _gnews_url("site:glassnode.com when:14d")),
+
+    # Gold
+    ("Kitco", _gnews_url("site:kitco.com when:3d")),
+    ("World Gold Council", _gnews_url("site:gold.org when:14d")),
+    ("LBMA", _gnews_url("site:lbma.org.uk when:14d")),
+    ("MCX", _gnews_url("site:mcxindia.com OR \"MCX Gold\" when:7d")),
+
+    # Official Sources (Fed, ECB, RBI, BLS)
+    ("Federal Reserve", "https://www.federalreserve.gov/feeds/press_all.xml"),
+    ("ECB", _gnews_url("site:ecb.europa.eu when:14d")),
+    ("RBI", _gnews_url("site:rbi.org.in when:14d")),
+    ("BLS", _gnews_url("site:bls.gov when:14d")),
 ]
 
-# Google News search queries
-GOOGLE_NEWS_QUERIES = [
-    ("Gold Wire", "gold price OR xauusd OR bullion OR silver when:1d"),
-    ("Forex Wire", "forex OR eurusd OR \"us dollar\" OR dxy OR gbpusd OR usdjpy when:1d"),
-    ("Fed & Central Banks", "\"federal reserve\" OR fomc OR powell OR \"interest rate\" OR \"rate cut\" OR inflation when:1d"),
-    ("Global Central Banks", "ECB OR BOE OR BOJ OR RBA OR RBNZ OR \"Bank of Canada\" when:1d"),
-    ("Global Currencies", "\"EUR/USD\" OR \"GBP/USD\" OR \"USD/JPY\" OR \"AUD/USD\" OR \"NZD/USD\" when:1d"),
-    ("Reuters", "gold OR forex OR dollar site:reuters.com when:1d"),
-    ("Forex Factory", "forex site:forexfactory.com when:1d"),
-    ("Moneycontrol", "gold OR forex OR dollar site:moneycontrol.com when:1d"),
-    ("FinancialJuice", "site:financialjuice.com when:1d"),
-]
+# Canonical source mappings to ensure only allowed sources appear
+SOURCE_CANONICAL = {
+    "reuters": "Reuters",
+    "bloomberg": "Bloomberg",
+    "cnbc": "CNBC",
+    "financial times": "Financial Times",
+    "ft.com": "Financial Times",
+    "tradingview": "TradingView",
+    "fxstreet": "FXStreet",
+    "forexlive": "ForexLive",
+    "investinglive": "ForexLive",
+    "dailyfx": "DailyFX",
+    "forex factory": "Forex Factory",
+    "investing.com": "Investing.com",
+    "coindesk": "CoinDesk",
+    "the block": "The Block",
+    "theblock": "The Block",
+    "cointelegraph": "Cointelegraph",
+    "decrypt": "Decrypt",
+    "coingecko": "CoinGecko",
+    "coinmarketcap": "CoinMarketCap",
+    "glassnode": "Glassnode",
+    "kitco": "Kitco",
+    "world gold council": "World Gold Council",
+    "gold.org": "World Gold Council",
+    "lbma": "LBMA",
+    "mcx": "MCX",
+    "multi commodity exchange": "MCX",
+    "federal reserve": "Federal Reserve",
+    "fed": "Federal Reserve",
+    "federal reserve board": "Federal Reserve",
+    "ecb": "ECB",
+    "european central bank": "ECB",
+    "rbi": "RBI",
+    "reserve bank of india": "RBI",
+    "bls": "BLS",
+    "bureau of labor statistics": "BLS",
+}
 
-# Asset Category Regex
+# Category Classification Patterns
+RE_CRYPTO = re.compile(
+    r"\b(bitcoin|btc|ethereum|eth|solana|sol|crypto|cryptocurrency|altcoins?|binance|bnb|xrp|ripple|stablecoins?|usdt|usdc|defi|sec|etf|blackrock|coinbase|satoshi|halving|on-chain|blockchain)\b",
+    re.IGNORECASE,
+)
 RE_GOLD = re.compile(
-    r"\b(gold|xau|xauusd|bullion|precious metals?|silver|spot gold|gold futures)\b",
+    r"\b(gold|xau|xauusd|bullion|precious metals?|silver|spot gold|gold futures|mcx gold|lbma)\b",
     re.IGNORECASE,
 )
 RE_FED = re.compile(
-    r"\b(fed|federal reserve|fomc|powell|interest rates?|rate cut|rate hike|inflation|cpi|ppi|pmi|gdp|non-?farm|payrolls|warsh|central bank|central banks|ecb|lagarde|boe|bailey|boj|rba)\b",
+    r"\b(fed|federal reserve|fomc|powell|interest rates?|rate cuts?|rate hikes?|inflation|cpi|ppi|pmi|gdp|non-?farm|payrolls|warsh|central banks?|ecb|lagarde|boe|bailey|boj|rba|rbi|bls)\b",
     re.IGNORECASE,
 )
 RE_FOREX = re.compile(
@@ -51,20 +120,14 @@ RE_FOREX = re.compile(
     re.IGNORECASE,
 )
 
-# Broad market filter
-KEYWORDS_FILTER = re.compile(
-    r"\b(gold|xau|xauusd|bullion|silver|forex|fx|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|usd/?chf|usd/?cad|dxy|fed|fomc|powell|dollar|usd|inflation|cpi|rate cut|rate hike|interest rate|central bank|ecb|boe|boj|rba|yields|treasury|economy|market wrap)\b",
-    re.IGNORECASE,
-)
-
 # Impact Classification Regex
 RE_HIGH_IMPACT = re.compile(
-    r"\b(cpi|inflation|nfp|non-?farm|payrolls|unemployment rate|gdp|core pce|rate cut|rate hike|interest rate decision|fomc statement|fomc decision|powell|fomc|warsh|lagarde|bailey|ueda|record high|all-time high|plunges|surges|spikes|crashes|slumps|selloff|rout|war|missile|attack|sanctions?|tariffs?|emergency|intervention|bailout)\b",
+    r"\b(cpi|inflation|nfp|non-?farm|payrolls|unemployment rate|gdp|core pce|rate cut|rate hike|interest rate decision|fomc statement|fomc decision|powell|fomc|warsh|lagarde|bailey|ueda|record high|all-time high|plunges|surges|spikes|crashes|slumps|selloff|rout|war|missile|attack|sanctions?|tariffs?|emergency|intervention|bailout|etf approval|hack|liquidation|sec lawsuit)\b",
     re.IGNORECASE,
 )
 
 RE_MEDIUM_IMPACT = re.compile(
-    r"\b(pmi|ppi|retail sales|jobless claims|consumer sentiment|consumer confidence|durable goods|ism|trade balance|trade deficit|fed\'?s|williams|waller|bowman|bostic|kashkari|barkin|daly|musalem|centeno|villeroy|nagel|crude|oil|opec|treasury yields?|10-year yield|bond yields?|dxy|dollar index|us dollar|hike bets|cut bets)\b",
+    r"\b(pmi|ppi|retail sales|jobless claims|consumer sentiment|consumer confidence|durable goods|ism|trade balance|trade deficit|fed\'?s|williams|waller|bowman|bostic|kashkari|barkin|daly|musalem|centeno|villeroy|nagel|crude|oil|opec|treasury yields?|10-year yield|bond yields?|dxy|dollar index|us dollar|hike bets|cut bets|whale|accumulation|upgrade|outflows?|inflows?)\b",
     re.IGNORECASE,
 )
 
@@ -73,7 +136,7 @@ COUNTRY_PATTERNS = {
     "US": (
         "🇺🇸",
         "United States",
-        re.compile(r"\b(us|usa|united states|fed|federal reserve|fomc|powell|dollar|usd|greenback|dxy|treasury|wall street|warsh|biden|trump|cpi|nfp|payrolls|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|nzd/?usd|usd/?cad|usd/?chf)\b", re.IGNORECASE)
+        re.compile(r"\b(us|usa|united states|fed|federal reserve|fomc|powell|dollar|usd|greenback|dxy|treasury|wall street|warsh|biden|trump|cpi|nfp|payrolls|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|nzd/?usd|usd/?cad|usd/?chf|bls)\b", re.IGNORECASE)
     ),
     "EU": (
         "🇪🇺",
@@ -83,7 +146,7 @@ COUNTRY_PATTERNS = {
     "UK": (
         "🇬🇧",
         "United Kingdom",
-        re.compile(r"\b(uk|britain|british|bank of england|boe|bailey|pound|sterling|gbp|gilts|ftse|london|gbp/?usd|eur/?gbp|gbp/?jpy)\b", re.IGNORECASE)
+        re.compile(r"\b(uk|britain|british|bank of england|boe|bailey|pound|sterling|gbp|gilts|ftse|london|gbp/?usd|eur/?gbp|gbp/?jpy|lbma)\b", re.IGNORECASE)
     ),
     "JP": (
         "🇯🇵",
@@ -122,18 +185,6 @@ _cached_data = None
 _cached_time = 0
 
 
-def google_news_url(query):
-    q = urllib.parse.quote(query)
-    return f"https://news.google.com/rss/search?q={q}&hl=en-US&gl=US&ceid=US:en"
-
-
-def get_all_feed_configs():
-    feeds = list(DIRECT_FEEDS)
-    for name, query in GOOGLE_NEWS_QUERIES:
-        feeds.append((name, google_news_url(query)))
-    return feeds
-
-
 def parse_pub_date(date_str):
     if not date_str:
         return int(time.time()), ""
@@ -147,7 +198,23 @@ def parse_pub_date(date_str):
     return int(time.time()), date_str
 
 
-def determine_category(title):
+def determine_category(title, source_label):
+    if source_label in ("Kitco", "World Gold Council", "LBMA", "MCX"):
+        return "Gold"
+    if source_label in ("CoinDesk", "The Block", "Cointelegraph", "Decrypt", "CoinGecko", "CoinMarketCap", "Glassnode"):
+        return "Crypto"
+    if source_label in ("Federal Reserve", "ECB", "RBI", "BLS"):
+        return "Fed & Economy"
+    if source_label in ("FXStreet", "ForexLive", "DailyFX", "Forex Factory"):
+        if RE_GOLD.search(title):
+            return "Gold"
+        if RE_CRYPTO.search(title):
+            return "Crypto"
+        return "Forex"
+
+    # General multi-asset sources (Reuters, Bloomberg, CNBC, Financial Times, TradingView, Investing.com)
+    if RE_CRYPTO.search(title):
+        return "Crypto"
     if RE_GOLD.search(title):
         return "Gold"
     if RE_FED.search(title):
@@ -187,16 +254,14 @@ def clean_title_and_source(raw_title, default_source):
     clean = raw_title.strip()
     source = default_source
 
-    if clean.lower().startswith("financialjuice:"):
-        clean = clean[15:].strip()
-        source = "FinancialJuice"
-
     parts = re.split(r"\s+-\s+([^-]+)$", clean)
     if len(parts) > 1 and parts[1].strip():
-        extracted_source = parts[1].strip()
-        if len(extracted_source) < 25:
-            source = extracted_source
-            clean = parts[0].strip()
+        extracted = parts[1].strip().lower()
+        clean = parts[0].strip()
+        for alias, canon in SOURCE_CANONICAL.items():
+            if alias in extracted:
+                source = canon
+                break
 
     return clean, source
 
@@ -214,12 +279,9 @@ def fetch_feed(source_label, url):
         content = resp.read()
         root = ET.fromstring(content)
 
-    is_direct_financial_feed = source_label in ("FXStreet", "FinancialJuice", "Investing.com")
-
     for item in root.iter("item"):
         raw_title = (item.findtext("title") or "").strip()
         link = (item.findtext("link") or "").strip()
-        guid = (item.findtext("guid") or link or raw_title).strip()
         pub_date_str = (item.findtext("pubDate") or "").strip()
 
         if not raw_title:
@@ -227,13 +289,10 @@ def fetch_feed(source_label, url):
 
         clean_title, source = clean_title_and_source(raw_title, source_label)
 
-        if not is_direct_financial_feed and not KEYWORDS_FILTER.search(raw_title):
-            continue
-
         epoch, formatted_date = parse_pub_date(pub_date_str)
-        category = determine_category(raw_title)
-        impact = determine_impact(raw_title)
-        countries, primary_code, primary_flag = determine_countries(raw_title)
+        category = determine_category(clean_title, source)
+        impact = determine_impact(clean_title)
+        countries, primary_code, primary_flag = determine_countries(clean_title)
 
         item_id = hashlib.md5(f"{clean_title.lower()}-{source.lower()}".encode()).hexdigest()[:12]
 
@@ -261,14 +320,13 @@ def get_latest_news():
     if _cached_data is not None and (now - _cached_time) < CACHE_TTL_SECONDS:
         return _cached_data
 
-    feed_configs = get_all_feed_configs()
     collected = []
     seen_titles = set()
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=12) as executor:
         future_to_source = {
             executor.submit(fetch_feed, source_label, url): source_label
-            for source_label, url in feed_configs
+            for source_label, url in CURATED_FEED_CONFIGS
         }
         for future in as_completed(future_to_source):
             try:
@@ -288,7 +346,7 @@ def get_latest_news():
         "status": "ok",
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": len(collected),
-        "news": collected[:200],
+        "news": collected[:250],
     }
 
     _cached_data = result
