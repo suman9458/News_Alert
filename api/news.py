@@ -2,7 +2,7 @@
 """
 Vercel Serverless Function: GET /api/news
 Fetches, cleans, filters, and categorizes real-time Gold, Forex, and Macro news headlines.
-Includes High / Medium / Low impact classification for professional trading.
+Includes High / Medium / Low impact classification and Country-wise economic tagging.
 """
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -29,6 +29,8 @@ GOOGLE_NEWS_QUERIES = [
     ("Gold Wire", "gold price OR xauusd OR bullion OR silver when:1d"),
     ("Forex Wire", "forex OR eurusd OR \"us dollar\" OR dxy OR gbpusd OR usdjpy when:1d"),
     ("Fed & Central Banks", "\"federal reserve\" OR fomc OR powell OR \"interest rate\" OR \"rate cut\" OR inflation when:1d"),
+    ("Global Central Banks", "ECB OR BOE OR BOJ OR RBA OR RBNZ OR \"Bank of Canada\" when:1d"),
+    ("Global Currencies", "\"EUR/USD\" OR \"GBP/USD\" OR \"USD/JPY\" OR \"AUD/USD\" OR \"NZD/USD\" when:1d"),
     ("Reuters", "gold OR forex OR dollar site:reuters.com when:1d"),
     ("Forex Factory", "forex site:forexfactory.com when:1d"),
     ("Moneycontrol", "gold OR forex OR dollar site:moneycontrol.com when:1d"),
@@ -65,6 +67,55 @@ RE_MEDIUM_IMPACT = re.compile(
     r"\b(pmi|ppi|retail sales|jobless claims|consumer sentiment|consumer confidence|durable goods|ism|trade balance|trade deficit|fed\'?s|williams|waller|bowman|bostic|kashkari|barkin|daly|musalem|centeno|villeroy|nagel|crude|oil|opec|treasury yields?|10-year yield|bond yields?|dxy|dollar index|us dollar|hike bets|cut bets)\b",
     re.IGNORECASE,
 )
+
+# Country / Economic Region Classification
+COUNTRY_PATTERNS = {
+    "US": (
+        "🇺🇸",
+        "United States",
+        re.compile(r"\b(us|usa|united states|fed|federal reserve|fomc|powell|dollar|usd|greenback|dxy|treasury|wall street|warsh|biden|trump|cpi|nfp|payrolls|eur/?usd|gbp/?usd|usd/?jpy|aud/?usd|nzd/?usd|usd/?cad|usd/?chf)\b", re.IGNORECASE)
+    ),
+    "EU": (
+        "🇪🇺",
+        "Eurozone",
+        re.compile(r"\b(euro|eur|ecb|european central bank|lagarde|eurozone|germany|german|france|french|bund|dax|villeroy|nagel|eur/?usd|eur/?gbp|eur/?jpy|eur/?chf)\b", re.IGNORECASE)
+    ),
+    "UK": (
+        "🇬🇧",
+        "United Kingdom",
+        re.compile(r"\b(uk|britain|british|bank of england|boe|bailey|pound|sterling|gbp|gilts|ftse|london|gbp/?usd|eur/?gbp|gbp/?jpy)\b", re.IGNORECASE)
+    ),
+    "JP": (
+        "🇯🇵",
+        "Japan",
+        re.compile(r"\b(japan|japanese|bank of japan|boj|ueda|yen|jpy|nikkei|tokyo|usd/?jpy|eur/?jpy|gbp/?jpy|aud/?jpy)\b", re.IGNORECASE)
+    ),
+    "AU": (
+        "🇦🇺",
+        "Australia",
+        re.compile(r"\b(australia|australian|rba|reserve bank of australia|bullock|aussie|aud|asx|sydney|aud/?usd|aud/?jpy|aud/?nzd)\b", re.IGNORECASE)
+    ),
+    "NZ": (
+        "🇳🇿",
+        "New Zealand",
+        re.compile(r"\b(new zealand|rbnz|reserve bank of new zealand|kiwi|nzd|orr|wellington|nzd/?usd|aud/?nzd)\b", re.IGNORECASE)
+    ),
+    "CA": (
+        "🇨🇦",
+        "Canada",
+        re.compile(r"\b(canada|canadian|bank of canada|boc|macklem|loonie|cad|usd/?cad)\b", re.IGNORECASE)
+    ),
+    "CH": (
+        "🇨🇭",
+        "Switzerland",
+        re.compile(r"\b(switzerland|swiss|snb|swiss national bank|franc|chf|usd/?chf|eur/?chf)\b", re.IGNORECASE)
+    ),
+    "CN": (
+        "🇨🇳",
+        "China",
+        re.compile(r"\b(china|chinese|pboc|people\'?s bank of china|yuan|renminbi|cny|beijing|shanghai)\b", re.IGNORECASE)
+    ),
+}
 
 CACHE_TTL_SECONDS = 20
 _cached_data = None
@@ -112,6 +163,24 @@ def determine_impact(title):
     if RE_MEDIUM_IMPACT.search(title):
         return "Medium"
     return "Low"
+
+
+def determine_countries(text):
+    matched = []
+    primary_code = "GLOBAL"
+    primary_flag = "🌍"
+
+    for code, (flag, name, pat) in COUNTRY_PATTERNS.items():
+        if pat.search(text):
+            matched.append(code)
+            if primary_code == "GLOBAL":
+                primary_code = code
+                primary_flag = flag
+
+    if not matched:
+        matched = ["GLOBAL"]
+
+    return matched, primary_code, primary_flag
 
 
 def clean_title_and_source(raw_title, default_source):
@@ -164,6 +233,7 @@ def fetch_feed(source_label, url):
         epoch, formatted_date = parse_pub_date(pub_date_str)
         category = determine_category(raw_title)
         impact = determine_impact(raw_title)
+        countries, primary_code, primary_flag = determine_countries(raw_title)
 
         item_id = hashlib.md5(f"{clean_title.lower()}-{source.lower()}".encode()).hexdigest()[:12]
 
@@ -175,6 +245,9 @@ def fetch_feed(source_label, url):
             "source": source,
             "category": category,
             "impact": impact,
+            "countries": countries,
+            "country": primary_code,
+            "country_flag": primary_flag,
             "pubDate": formatted_date,
             "timestamp": epoch,
         })

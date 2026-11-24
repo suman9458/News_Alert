@@ -461,33 +461,56 @@
     .dot-amber { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.6); }
     .dot-green { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
 
-    /* US Only Button (1st Image Style) */
-    .btn-us-only {
-      padding: 0.35rem 0.75rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-muted);
-      transition: all 0.2s ease;
+    /* Country Filter Pill Group */
+    .country-pill-group {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.2rem;
+      gap: 0.15rem;
+      overflow-x: auto;
+      max-width: 100%;
+      scrollbar-width: thin;
+    }
+
+    .country-pill-group::-webkit-scrollbar {
+      height: 3px;
+    }
+
+    .country-pill-group::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .pill-country {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
       user-select: none;
     }
 
-    .btn-us-only:hover {
-      border-color: #3b82f6;
+    .pill-country:hover {
       color: #fff;
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    .btn-us-only.active {
-      background: rgba(59, 130, 246, 0.2);
-      border-color: #3b82f6;
+    .pill-country.active {
       color: #60a5fa;
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+      background: rgba(59, 130, 246, 0.22);
+      border-bottom: 2px solid #3b82f6;
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.25);
     }
 
     .divider-v {
@@ -670,6 +693,20 @@
       background: rgba(148, 163, 184, 0.15);
       color: #94a3b8;
       border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .badge-country {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(59, 130, 246, 0.12);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      letter-spacing: 0.02em;
     }
 
     .badge-source {
@@ -1041,11 +1078,39 @@
 
           <div class="divider-v"></div>
 
-          <!-- US Only Toggle Button (1st Image: US Only) -->
-          <button id="btnUsOnly" class="btn-us-only" title="Filter for US / Fed / Dollar headlines only">
-            <span>🇺🇸</span>
-            <span>US Only</span>
-          </button>
+          <!-- Country Filter Group (US, Euro, UK, Japan, Australia, New Zealand, Canada, Swiss, China) -->
+          <div class="pill-group country-pill-group" title="Filter by Country / Economic Region">
+            <button class="pill-country active" data-country="all" title="All Global Economies">
+              <span>🌍</span> All
+            </button>
+            <button class="pill-country" data-country="US" title="United States (Fed, USD, Treasuries, Wall St)">
+              <span>🇺🇸</span> US
+            </button>
+            <button class="pill-country" data-country="EU" title="Eurozone (ECB, EUR, Germany, France)">
+              <span>🇪🇺</span> EUR
+            </button>
+            <button class="pill-country" data-country="UK" title="United Kingdom (BOE, GBP, Pound)">
+              <span>🇬🇧</span> UK
+            </button>
+            <button class="pill-country" data-country="JP" title="Japan (BOJ, JPY, Yen)">
+              <span>🇯🇵</span> JPY
+            </button>
+            <button class="pill-country" data-country="AU" title="Australia (RBA, AUD, Aussie)">
+              <span>🇦🇺</span> AUD
+            </button>
+            <button class="pill-country" data-country="NZ" title="New Zealand (RBNZ, NZD, Kiwi)">
+              <span>🇳🇿</span> NZD
+            </button>
+            <button class="pill-country" data-country="CA" title="Canada (BOC, CAD, Loonie)">
+              <span>🇨🇦</span> CAD
+            </button>
+            <button class="pill-country" data-country="CH" title="Switzerland (SNB, CHF, Swiss Franc)">
+              <span>🇨🇭</span> CHF
+            </button>
+            <button class="pill-country" data-country="CN" title="China (PBOC, CNY, Yuan)">
+              <span>🇨🇳</span> CNY
+            </button>
+          </div>
 
         </div>
 
@@ -1108,7 +1173,8 @@
       activeCategory: 'all',  // 'all' | 'alerts_only' | 'Gold' | 'Forex' | 'Fed & Economy'
       activeImpact: 'all',    // 'all' | 'High' | 'Medium' | 'Low'
       timeFilter: 'today',    // 'today' | 'week' | 'all'
-      usOnly: false,          // boolean toggle
+      activeCountry: 'all',   // 'all' | 'US' | 'EU' | 'UK' | 'JP' | 'AU' | 'NZ' | 'CA' | 'CH' | 'CN'
+      usOnly: false,          // backward-compatible
       searchQuery: '',
       soundEnabled: true,
       desktopNotifEnabled: false,
@@ -1119,6 +1185,33 @@
       newAlertsInSession: 0,
       unreadCount: 0,
       originalTitle: document.title,
+    };
+
+    // Client-side country detection patterns for robust matching
+    const CLIENT_COUNTRY_PATTERNS = {
+      US: /\b(us|usa|united states|fed|federal reserve|fomc|powell|dollar|usd|greenback|dxy|treasury|wall street|warsh|biden|trump|cpi|nfp|payrolls|eur\/?usd|gbp\/?usd|usd\/?jpy|aud\/?usd|nzd\/?usd|usd\/?cad|usd\/?chf)\b/i,
+      EU: /\b(euro|eur|ecb|european central bank|lagarde|eurozone|germany|german|france|french|bund|dax|villeroy|nagel|eur\/?usd|eur\/?gbp|eur\/?jpy|eur\/?chf)\b/i,
+      UK: /\b(uk|britain|british|bank of england|boe|bailey|pound|sterling|gbp|gilts|ftse|london|gbp\/?usd|eur\/?gbp|gbp\/?jpy)\b/i,
+      JP: /\b(japan|japanese|bank of japan|boj|ueda|yen|jpy|nikkei|tokyo|usd\/?jpy|eur\/?jpy|gbp\/?jpy|aud\/?jpy)\b/i,
+      AU: /\b(australia|australian|rba|reserve bank of australia|bullock|aussie|aud|asx|sydney|aud\/?usd|aud\/?jpy|aud\/?nzd)\b/i,
+      NZ: /\b(new zealand|rbnz|reserve bank of new zealand|kiwi|nzd|orr|wellington|nzd\/?usd|aud\/?nzd)\b/i,
+      CA: /\b(canada|canadian|bank of canada|boc|macklem|loonie|cad|usd\/?cad)\b/i,
+      CH: /\b(switzerland|swiss|snb|swiss national bank|franc|chf|usd\/?chf|eur\/?chf)\b/i,
+      CN: /\b(china|chinese|pboc|people\'?s bank of china|yuan|renminbi|cny|beijing|shanghai)\b/i,
+    };
+
+    const COUNTRY_DISPLAY_INFO = {
+      all: { flag: '🌍', name: 'All Economies', code: 'ALL' },
+      US: { flag: '🇺🇸', name: 'United States', code: 'US' },
+      EU: { flag: '🇪🇺', name: 'Eurozone', code: 'EUR' },
+      UK: { flag: '🇬🇧', name: 'United Kingdom', code: 'UK' },
+      JP: { flag: '🇯🇵', name: 'Japan', code: 'JPY' },
+      AU: { flag: '🇦🇺', name: 'Australia', code: 'AUD' },
+      NZ: { flag: '🇳🇿', name: 'New Zealand', code: 'NZD' },
+      CA: { flag: '🇨🇦', name: 'Canada', code: 'CAD' },
+      CH: { flag: '🇨🇭', name: 'Switzerland', code: 'CHF' },
+      CN: { flag: '🇨🇳', name: 'China', code: 'CNY' },
+      GLOBAL: { flag: '🌍', name: 'Global Wire', code: 'GLOBAL' }
     };
 
     // --- Audio Synthesis Alert Engine (Web Audio API) ---
@@ -1398,11 +1491,15 @@
           return false;
         }
 
-        // 3. US Only Filter (Image 1 Control)
-        if (state.usOnly) {
-          const text = (item.title + ' ' + (item.raw_title || '') + ' ' + item.source).toLowerCase();
-          const isUS = /\b(us|usa|united states|fed|federal reserve|fomc|powell|dollar|usd|greenback|dxy|cpi|nfp|treasury|wall street|warsh|yellen|biden|trump|american)\b/i.test(text);
-          if (!isUS) return false;
+        // 3. Country / Economy Filter (US, Eurozone, UK, Japan, Australia, New Zealand, Canada, Switzerland, China)
+        if (state.activeCountry !== 'all') {
+          const matchCountries = Array.isArray(item.countries) && item.countries.includes(state.activeCountry);
+          const matchPrimary = item.country === state.activeCountry;
+          const fullText = (item.title + ' ' + (item.raw_title || '') + ' ' + (item.source || ''));
+          const matchClient = CLIENT_COUNTRY_PATTERNS[state.activeCountry] && CLIENT_COUNTRY_PATTERNS[state.activeCountry].test(fullText);
+          if (!matchCountries && !matchPrimary && !matchClient) {
+            return false;
+          }
         }
 
         // 4. Time Window Filter (Image 1 Controls: Today, Week, All)
@@ -1432,8 +1529,9 @@
       // Update Sub Status Tag
       let impactText = state.activeImpact === 'all' ? 'All Impacts' : `${state.activeImpact} Impact`;
       let timeText = state.timeFilter === 'today' ? 'Today' : (state.timeFilter === 'week' ? 'This Week' : 'All Time');
-      let usText = state.usOnly ? ' &bull; 🇺🇸 US Only' : '';
-      document.getElementById('filterStatusBadge').innerHTML = `${timeText} &bull; ${impactText}${usText}`;
+      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flag: '🌍', name: state.activeCountry };
+      let countryText = state.activeCountry === 'all' ? 'All Economies' : `${countryInfo.flag} ${countryInfo.name}`;
+      document.getElementById('filterStatusBadge').innerHTML = `${timeText} &bull; ${impactText} &bull; ${countryText}`;
 
       document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}`;
 
@@ -1446,7 +1544,7 @@
           <div class="state-card">
             <div class="icon">🔍</div>
             <h3>${msg}</h3>
-            <p>Try switching impact, changing the time range, or unchecking "US Only".</p>
+            <p>Try switching country, changing impact level, or adjusting your time range.</p>
           </div>
         `;
         return;
@@ -1469,12 +1567,27 @@
           impactIcon = '🟡';
         }
 
+        // Build Country Badges
+        let countryBadgesHtml = '';
+        if (Array.isArray(item.countries) && item.countries.length > 0 && !item.countries.includes('GLOBAL')) {
+          countryBadgesHtml = item.countries.map(c => {
+            const info = COUNTRY_DISPLAY_INFO[c] || { flag: '🌐', code: c, name: c };
+            return `<span class="badge-country" title="Economic Region: ${info.name}">${info.flag} ${info.code}</span>`;
+          }).join(' ');
+        } else if (item.country && item.country !== 'GLOBAL') {
+          const info = COUNTRY_DISPLAY_INFO[item.country] || { flag: item.country_flag || '🌐', code: item.country, name: item.country };
+          countryBadgesHtml = `<span class="badge-country" title="Economic Region: ${info.name}">${info.flag} ${info.code}</span>`;
+        } else {
+          countryBadgesHtml = `<span class="badge-country" style="opacity: 0.75;" title="Global Macro / Multi-region">🌍 Global</span>`;
+        }
+
         return `
           <article class="news-card ${item.is_new ? 'card-new' : ''}">
             <div class="news-card-meta">
               <div class="meta-left">
                 <span class="badge-impact ${impactClass}">${impactIcon} ${escapeHtml(item.impact.toUpperCase())}</span>
                 <span class="badge-category ${catClass}">${escapeHtml(item.category)}</span>
+                ${countryBadgesHtml}
                 <span class="badge-source">${escapeHtml(item.source)}</span>
                 ${item.is_new ? '<span class="badge-new-pill">✨ LIVE ALERT</span>' : ''}
               </div>
@@ -1614,16 +1727,14 @@
         });
       });
 
-      // 1st Image: US Only Toggle Button
-      document.getElementById('btnUsOnly').addEventListener('click', () => {
-        state.usOnly = !state.usOnly;
-        const btn = document.getElementById('btnUsOnly');
-        if (state.usOnly) {
+      // Country Filter Pill Buttons Click (All, US, EU, UK, JP, AU, NZ, CA, CH, CN)
+      document.querySelectorAll('.pill-country').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.pill-country').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-        renderFeed();
+          state.activeCountry = btn.dataset.country;
+          renderFeed();
+        });
       });
 
       // 2nd Image: Category Tabs Click (All Headlines, Live Alerts, Gold, Forex, Fed)
