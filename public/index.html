@@ -205,6 +205,18 @@
       border-color: var(--border-highlight);
     }
 
+    .select-notif-impact {
+      font-weight: 600;
+      color: var(--text-main);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .select-notif-impact:hover {
+      border-color: #3b82f6;
+    }
+
     /* Main Container */
     main {
       max-width: 1400px;
@@ -1016,6 +1028,14 @@
           <span id="notifLabel">Enable Desktop Alerts</span>
         </button>
 
+        <!-- Notification Type Selection Dropdown -->
+        <select id="selectNotifImpact" class="select-input select-notif-impact" title="Choose which news impact triggers notifications">
+          <option value="High">🔴 High Impact</option>
+          <option value="Medium">🟡 Medium Impact</option>
+          <option value="Low">🟢 Low Impact</option>
+          <option value="all" selected>⚡ All News</option>
+        </select>
+
         <select id="selectInterval" class="select-input" title="Auto-refresh frequency">
           <option value="15000" selected>Poll: 15s (Fast)</option>
           <option value="30000">Poll: 30s</option>
@@ -1301,6 +1321,7 @@
       searchQuery: '',
       soundEnabled: true,
       desktopNotifEnabled: false,
+      notifImpactFilter: 'all', // 'all' | 'High' | 'Medium' | 'Low'
       pollInterval: 15000,
       pollTimer: null,
       progressTimer: null,
@@ -1408,10 +1429,17 @@
         if (permission === 'granted') {
           state.desktopNotifEnabled = true;
           updateNotifUI();
+          const labels = {
+            all: 'All News',
+            High: 'High Impact News',
+            Medium: 'Medium Impact News',
+            Low: 'Low Impact News'
+          };
+          const currentFilter = labels[state.notifImpactFilter] || 'All News';
           triggerDesktopNotification({
-            title: 'Desktop alerts active! You will receive notifications for all incoming news.',
+            title: `Desktop alerts active! Configured for ${currentFilter}.`,
             category: 'Alert System',
-            impact: 'High',
+            impact: state.notifImpactFilter === 'all' ? 'High' : state.notifImpactFilter,
             source: 'Radar'
           });
         } else {
@@ -1439,6 +1467,10 @@
 
     function triggerDesktopNotification(item) {
       if (!state.desktopNotifEnabled || !('Notification' in window) || Notification.permission !== 'granted') {
+        return;
+      }
+      // Check notification impact filter preference
+      if (state.notifImpactFilter !== 'all' && item.impact !== state.notifImpactFilter) {
         return;
       }
       try {
@@ -1560,10 +1592,19 @@
         state.newAlertsInSession += newArrivalsCount;
         state.unreadCount += newArrivalsCount;
 
-        playAlertChime();
+        // Check if any incoming headlines match the user's selected notification impact level
+        const matchingAlertItems = newlyArrivedItems.filter(item => {
+          if (state.notifImpactFilter === 'all') return true;
+          return item.impact === state.notifImpactFilter;
+        });
+
+        if (matchingAlertItems.length > 0) {
+          playAlertChime();
+        }
+
         document.title = `(${state.unreadCount} New) 🚨 Market Alert | ${state.originalTitle}`;
 
-        newlyArrivedItems.forEach((item, index) => {
+        matchingAlertItems.forEach((item, index) => {
           setTimeout(() => {
             triggerDesktopNotification(item);
             if (index < 4) {
@@ -1964,6 +2005,23 @@
       // Desktop Notification Toggle
       document.getElementById('btnNotifToggle').addEventListener('click', () => {
         requestNotificationPermission();
+      });
+
+      // Notification Impact Type Filter Dropdown
+      document.getElementById('selectNotifImpact').addEventListener('change', (e) => {
+        state.notifImpactFilter = e.target.value;
+        const labels = {
+          all: 'All News',
+          High: 'High Impact News',
+          Medium: 'Medium Impact News',
+          Low: 'Low Impact News'
+        };
+        showToast({
+          title: `Notification alerts set to: ${labels[state.notifImpactFilter] || state.notifImpactFilter}`,
+          category: 'Alert Filter',
+          impact: state.notifImpactFilter === 'all' ? 'Low' : state.notifImpactFilter,
+          source: 'System'
+        });
       });
 
       // Polling Interval Select
