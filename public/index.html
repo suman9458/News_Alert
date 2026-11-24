@@ -1097,6 +1097,186 @@
       .search-box { width: 100%; }
       .toast-container { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
     }
+
+    /* ========================================================
+       Upcoming Economic Calendar Styles (Forex Factory)
+       ======================================================== */
+    .cal-date-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1rem;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    [data-theme="light"] .cal-date-banner {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+
+    .cal-date-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cal-date-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    .cal-count-badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      background: var(--count-bg);
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .cal-event-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1.15rem;
+      display: grid;
+      grid-template-columns: 140px 105px 1fr 200px;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.18s ease;
+      position: relative;
+    }
+
+    .cal-event-card:hover {
+      border-color: #3b82f6;
+      background: var(--bg-card);
+      transform: translateX(3px);
+    }
+
+    [data-theme="light"] .cal-event-card {
+      box-shadow: var(--card-shadow);
+      background: #ffffff;
+    }
+
+    [data-theme="light"] .cal-event-card:hover {
+      background: #ffffff;
+      box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.08);
+      border-color: #2563eb;
+    }
+
+    .cal-col-time {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .cal-time-val {
+      font-size: 0.88rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+      letter-spacing: 0.02em;
+    }
+
+    .cal-country-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .cal-col-impact {
+      display: flex;
+      align-items: center;
+    }
+
+    .cal-col-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+    }
+
+    .cal-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .cal-event-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
+    }
+
+    .cal-event-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .cal-col-data {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1.25rem;
+    }
+
+    .cal-metric-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.15rem;
+      min-width: 75px;
+    }
+
+    .cal-metric-lbl {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .cal-metric-num {
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-main);
+    }
+
+    .cal-metric-num.forecast {
+      color: #38bdf8;
+    }
+
+    [data-theme="light"] .cal-metric-num.forecast {
+      color: #0284c7;
+    }
+
+    .cal-metric-num.previous {
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      .cal-event-card {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+      }
+      .cal-col-data {
+        justify-content: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1273,8 +1453,9 @@
       <div class="filter-toolbar-sub">
         <div class="toolbar-left-group">
 
-          <!-- Time Window Group (1st Image: Today, This Week, All) -->
+          <!-- Time Window Group (Upcoming first, Today second, This Week, All) -->
           <div class="pill-group" title="Filter by timeframe">
+            <button class="pill-btn" data-time="upcoming">Upcoming</button>
             <button class="pill-btn active" data-time="today">Today</button>
             <button class="pill-btn" data-time="week">This Week</button>
             <button class="pill-btn" data-time="all">All</button>
@@ -1365,7 +1546,7 @@
     <section class="feed-container">
       <div class="feed-header">
         <h2>
-          <span>Market Wire</span>
+          <span id="feedTitleLabel">Market Wire</span>
           <span id="feedCountBadge" style="font-size: 0.8rem; font-weight: 500; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;"></span>
         </h2>
         <span id="lastUpdatedTime" class="timestamp-info">Syncing feed...</span>
@@ -1452,6 +1633,9 @@
       newAlertsInSession: 0,
       unreadCount: 0,
       originalTitle: document.title,
+      calendarEvents: [],
+      calendarLoaded: false,
+      calendarLoading: false,
     };
 
     // Client-side country detection patterns for robust matching
@@ -1652,6 +1836,32 @@
       }, 8000);
     }
 
+    // --- Forex Factory Economic Calendar Fetching ---
+    async function fetchCalendarData() {
+      if (state.calendarLoading) return;
+      state.calendarLoading = true;
+      try {
+        const response = await fetch('/api/calendar', {
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-cache'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data && Array.isArray(data.events)) {
+            state.calendarEvents = data.events;
+            state.calendarLoaded = true;
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching economic calendar:', err);
+      } finally {
+        state.calendarLoading = false;
+        if (state.timeFilter === 'upcoming') {
+          renderFeed();
+        }
+      }
+    }
+
     // --- Data Fetching Engine ---
     async function fetchNewsData() {
       const refreshBtn = document.getElementById('btnRefresh');
@@ -1768,9 +1978,160 @@
       document.getElementById('countFed').textContent = fed;
     }
 
+    // --- Upcoming Economic Calendar Rendering (Forex Factory) ---
+    function renderUpcomingCalendar(container) {
+      const feedTitle = document.getElementById('feedTitleLabel');
+      if (feedTitle) feedTitle.innerHTML = '📅 Upcoming Economic Calendar &amp; Releases';
+
+      if (!state.calendarLoaded && state.calendarEvents.length === 0) {
+        container.innerHTML = `
+          <div class="state-card">
+            <div class="loading-spinner" style="width: 32px; height: 32px;"></div>
+            <h3>Fetching Upcoming Economic Releases...</h3>
+            <p>Connecting to Forex Factory economic calendar for interest rate decisions, CPI, NFP, and GDP releases.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Filter events by Impact, Country, Search
+      const filtered = state.calendarEvents.filter(ev => {
+        // 1. Impact filter
+        if (state.activeImpact !== 'all') {
+          if (ev.impact.toLowerCase() !== state.activeImpact.toLowerCase()) return false;
+        }
+
+        // 2. Country / Region filter
+        if (state.activeCountry !== 'all') {
+          const matchCountry = ev.country === state.activeCountry;
+          const matchCurrency = ev.currency === state.activeCountry;
+          if (!matchCountry && !matchCurrency) return false;
+        }
+
+        // 3. Search query
+        if (state.searchQuery) {
+          const q = state.searchQuery.toLowerCase();
+          const matchTitle = (ev.title || '').toLowerCase().includes(q);
+          const matchCurr = (ev.currency || '').toLowerCase().includes(q);
+          const matchCName = (ev.country_name || '').toLowerCase().includes(q);
+          if (!matchTitle && !matchCurr && !matchCName) return false;
+        }
+
+        return true;
+      });
+
+      // Update Sub Status Tag
+      let impactText = state.activeImpact === 'all' ? 'All Impacts' : `${state.activeImpact} Impact`;
+      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: '🌍', name: state.activeCountry };
+      let countryFlagDisplay = countryInfo.flagImg ? `<img src="${countryInfo.flagImg}" onerror="this.onerror=null;this.src='${countryInfo.flagCdn || ''}';" class="flag-icon" style="vertical-align: middle; margin-right: 4px;">` : (countryInfo.flagEmoji + ' ');
+      let countryText = state.activeCountry === 'all' ? '🌍 All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
+      document.getElementById('filterStatusBadge').innerHTML = `📅 Upcoming &bull; ${impactText} &bull; ${countryText}`;
+      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} upcoming releases`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="state-card">
+            <div class="icon">📅</div>
+            <h3>No upcoming economic releases match the selected filters</h3>
+            <p>Try switching to "All" impacts, changing the country region, or clearing the search query.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Group date-wise (preserve chronological order)
+      const dateGroups = [];
+      const dateMap = {};
+
+      filtered.forEach(ev => {
+        const dKey = ev.date_formatted || 'Upcoming Releases';
+        if (!dateMap[dKey]) {
+          dateMap[dKey] = [];
+          dateGroups.push(dKey);
+        }
+        dateMap[dKey].push(ev);
+      });
+
+      let html = '';
+      dateGroups.forEach(dKey => {
+        const items = dateMap[dKey];
+        html += `
+          <div class="cal-date-banner">
+            <div class="cal-date-left">
+              <span class="cal-calendar-icon">📅</span>
+              <span class="cal-date-label">${dKey}</span>
+            </div>
+            <span class="cal-count-badge">${items.length} ${items.length === 1 ? 'Release' : 'Releases'}</span>
+          </div>
+        `;
+
+        items.forEach(item => {
+          let dotClass = 'dot-green';
+          let impactClass = 'impact-low';
+          if (item.impact === 'High') {
+            dotClass = 'dot-red';
+            impactClass = 'impact-high';
+          } else if (item.impact === 'Medium') {
+            dotClass = 'dot-amber';
+            impactClass = 'impact-medium';
+          }
+
+          const flagHtml = item.country_flag 
+            ? `<img src="${item.country_flag}" onerror="this.onerror=null;this.src='${item.flag_cdn || ''}';" class="flag-icon" alt="${item.currency}">`
+            : (item.flag_emoji || '🌐');
+
+          html += `
+            <div class="cal-event-card">
+              <div class="cal-col-time">
+                <span class="cal-time-val">${item.time}</span>
+                <div class="cal-country-pill">
+                  ${flagHtml}
+                  <strong>${item.currency}</strong>
+                </div>
+              </div>
+
+              <div class="cal-col-impact">
+                <span class="badge-impact ${impactClass}">
+                  <span class="dot-sphere ${dotClass}"></span> ${item.impact.toUpperCase()}
+                </span>
+              </div>
+
+              <div class="cal-col-info">
+                <div class="cal-title-row">
+                  <span class="cal-event-title">${item.title}</span>
+                  <span class="badge-source">Forex Factory</span>
+                </div>
+                <div class="cal-event-sub">${item.country_name || item.currency} &bull; Scheduled Release &bull; ${item.time}</div>
+              </div>
+
+              <div class="cal-col-data">
+                <div class="cal-metric-box">
+                  <span class="cal-metric-lbl">FORECAST</span>
+                  <span class="cal-metric-num forecast">${item.forecast || '-'}</span>
+                </div>
+                <div class="cal-metric-box">
+                  <span class="cal-metric-lbl">PREVIOUS</span>
+                  <span class="cal-metric-num previous">${item.previous || '-'}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      });
+
+      container.innerHTML = html;
+    }
+
     // --- Multi-Criteria Filtering Engine ---
     function renderFeed() {
       const container = document.getElementById('newsFeedList');
+      if (state.timeFilter === 'upcoming') {
+        renderUpcomingCalendar(container);
+        return;
+      }
+      const feedTitle = document.getElementById('feedTitleLabel');
+      if (feedTitle) feedTitle.textContent = 'Market Wire';
+
       const listToFilter = (state.activeCategory === 'alerts_only') ? state.sessionAlerts : state.news;
       const nowEpoch = Math.floor(Date.now() / 1000);
 
@@ -2077,6 +2438,7 @@
 
       initNotifications();
       fetchNewsData();
+      fetchCalendarData();
       setupPollInterval();
 
       // Top Overview Cards Click
@@ -2101,13 +2463,17 @@
         });
       });
 
-      // 1st Image: Time Window Buttons Click (Today, This Week, All)
+      // 1st Image: Time Window Buttons Click (Upcoming, Today, This Week, All)
       document.querySelectorAll('.pill-group button[data-time]').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.pill-group button[data-time]').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           state.timeFilter = btn.dataset.time;
-          renderFeed();
+          if (state.timeFilter === 'upcoming' && (!state.calendarLoaded || state.calendarEvents.length === 0)) {
+            fetchCalendarData();
+          } else {
+            renderFeed();
+          }
         });
       });
 
@@ -2169,6 +2535,13 @@
           document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
           tab.classList.add('active');
           state.activeCategory = tab.dataset.category;
+          if (state.timeFilter === 'upcoming') {
+            state.timeFilter = 'today';
+            document.querySelectorAll('.pill-group button[data-time]').forEach(b => {
+              if (b.dataset.time === 'today') b.classList.add('active');
+              else b.classList.remove('active');
+            });
+          }
           renderFeed();
         });
       });

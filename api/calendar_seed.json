@@ -1,0 +1,210 @@
+[
+  {
+    "title": "Fed Interest Rate Decision & FOMC Statement",
+    "country": "USD",
+    "date": "2026-11-25T14:00:00-05:00",
+    "impact": "High",
+    "forecast": "4.50%",
+    "previous": "4.75%"
+  },
+  {
+    "title": "FOMC Press Conference (Chair Powell)",
+    "country": "USD",
+    "date": "2026-11-25T14:30:00-05:00",
+    "impact": "High",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "Core PCE Price Index m/m",
+    "country": "USD",
+    "date": "2026-11-26T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "title": "Prelim GDP q/q",
+    "country": "USD",
+    "date": "2026-11-26T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "2.8%",
+    "previous": "3.0%"
+  },
+  {
+    "title": "Unemployment Claims",
+    "country": "USD",
+    "date": "2026-11-26T08:30:00-05:00",
+    "impact": "Medium",
+    "forecast": "215K",
+    "previous": "213K"
+  },
+  {
+    "title": "Consumer Price Index (CPI) m/m",
+    "country": "USD",
+    "date": "2026-11-27T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "0.2%",
+    "previous": "0.2%"
+  },
+  {
+    "title": "Core CPI m/m",
+    "country": "USD",
+    "date": "2026-11-27T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "0.3%",
+    "previous": "0.3%"
+  },
+  {
+    "title": "ECB Monetary Policy Statement & Rate Decision",
+    "country": "EUR",
+    "date": "2026-11-26T08:15:00-05:00",
+    "impact": "High",
+    "forecast": "3.25%",
+    "previous": "3.40%"
+  },
+  {
+    "title": "ECB Press Conference (President Lagarde)",
+    "country": "EUR",
+    "date": "2026-11-26T08:45:00-05:00",
+    "impact": "High",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "German Flash Manufacturing PMI",
+    "country": "EUR",
+    "date": "2026-11-25T03:30:00-05:00",
+    "impact": "Medium",
+    "forecast": "43.5",
+    "previous": "43.0"
+  },
+  {
+    "title": "Eurozone Flash Services PMI",
+    "country": "EUR",
+    "date": "2026-11-25T04:00:00-05:00",
+    "impact": "Medium",
+    "forecast": "51.6",
+    "previous": "51.4"
+  },
+  {
+    "title": "Bank of England Official Bank Rate",
+    "country": "GBP",
+    "date": "2026-11-26T07:00:00-05:00",
+    "impact": "High",
+    "forecast": "4.75%",
+    "previous": "4.75%"
+  },
+  {
+    "title": "BOE Monetary Policy Report & Summary",
+    "country": "GBP",
+    "date": "2026-11-26T07:00:00-05:00",
+    "impact": "High",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "UK Flash Manufacturing & Services PMI",
+    "country": "GBP",
+    "date": "2026-11-25T04:30:00-05:00",
+    "impact": "Medium",
+    "forecast": "50.1",
+    "previous": "49.9"
+  },
+  {
+    "title": "Tokyo Core CPI y/y",
+    "country": "JPY",
+    "date": "2026-11-26T18:30:00-05:00",
+    "impact": "High",
+    "forecast": "2.1%",
+    "previous": "1.8%"
+  },
+  {
+    "title": "Bank of Japan Policy Rate & Outlook Report",
+    "country": "JPY",
+    "date": "2026-11-27T22:30:00-05:00",
+    "impact": "High",
+    "forecast": "0.50%",
+    "previous": "0.25%"
+  },
+  {
+    "title": "BOJ Press Conference (Governor Ueda)",
+    "country": "JPY",
+    "date": "2026-11-28T01:30:00-05:00",
+    "impact": "High",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "Monthly CPI Indicator y/y",
+    "country": "AUD",
+    "date": "2026-11-25T19:30:00-05:00",
+    "impact": "High",
+    "forecast": "2.3%",
+    "previous": "2.1%"
+  },
+  {
+    "title": "RBA Meeting Minutes",
+    "country": "AUD",
+    "date": "2026-11-26T19:30:00-05:00",
+    "impact": "Medium",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "RBNZ Official Cash Rate & Monetary Policy Statement",
+    "country": "NZD",
+    "date": "2026-11-25T20:00:00-05:00",
+    "impact": "High",
+    "forecast": "4.25%",
+    "previous": "4.75%"
+  },
+  {
+    "title": "RBNZ Press Conference",
+    "country": "NZD",
+    "date": "2026-11-25T21:00:00-05:00",
+    "impact": "High",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "GDP m/m",
+    "country": "CAD",
+    "date": "2026-11-27T08:30:00-05:00",
+    "impact": "High",
+    "forecast": "0.2%",
+    "previous": "0.0%"
+  },
+  {
+    "title": "BOC Financial System Review",
+    "country": "CAD",
+    "date": "2026-11-26T10:00:00-05:00",
+    "impact": "Medium",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "SNB Quarterly Bulletin & Policy Review",
+    "country": "CHF",
+    "date": "2026-11-26T03:00:00-05:00",
+    "impact": "Medium",
+    "forecast": "-",
+    "previous": "-"
+  },
+  {
+    "title": "Manufacturing PMI",
+    "country": "CNY",
+    "date": "2026-11-28T20:30:00-05:00",
+    "impact": "High",
+    "forecast": "50.2",
+    "previous": "50.1"
+  },
+  {
+    "title": "Non-Manufacturing PMI",
+    "country": "CNY",
+    "date": "2026-11-28T20:30:00-05:00",
+    "impact": "Medium",
+    "forecast": "50.4",
+    "previous": "50.2"
+  }
+]
