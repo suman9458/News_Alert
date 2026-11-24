@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gold & Forex Live Alert | Real-Time News Terminal</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #090d16;
+      --bg-surface: #111827;
+      --bg-card: #182234;
+      --bg-card-hover: #1f2c42;
+      --border-color: #243247;
+      --border-highlight: #3b82f6;
+      --text-main: #f3f4f6;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-gold: #f59e0b;
+      --accent-gold-glow: rgba(245, 158, 11, 0.2);
+      --accent-cyan: #38bdf8;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-purple: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 0.75rem 1.5rem;
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .brand-info h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-info h1 span.gold {
+      color: var(--accent-gold);
+    }
+
+    .brand-info p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.55rem;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Alert Controls Bar */
+    .controls-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: #3b82f6;
+    }
+
+    .btn.active {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: #3b82f6;
+      color: #60a5fa;
+    }
+
+    .btn.alert-active {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10b981;
+      color: #34d399;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .btn-test {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.65rem;
+      color: var(--text-muted);
+    }
+
+    select.select-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.45rem 0.65rem;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    select.select-input:focus {
+      outline: none;
+      border-color: var(--border-highlight);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Metric Summary Cards */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      border-color: #334155;
+    }
+
+    .metric-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-value {
+      font-size: 1.7rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .metric-gold .metric-value { color: var(--accent-gold); }
+    .metric-forex .metric-value { color: var(--accent-cyan); }
+    .metric-fed .metric-value { color: var(--accent-purple); }
+    .metric-alerts .metric-value { color: var(--accent-red); }
+
+    /* Filter & Search Bar */
+    .filter-bar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.9rem 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .filter-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .filter-tab:hover {
+      color: #fff;
+      background: var(--bg-card-hover);
+    }
+
+    .filter-tab.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+
+    .filter-tab span.count {
+      display: inline-block;
+      margin-left: 0.4rem;
+      font-size: 0.72rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.35);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      width: 280px;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-dim);
+    }
+
+    /* Live Progress Bar for next auto-refresh */
+    .refresh-progress-wrapper {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: -0.5rem;
+    }
+
+    .refresh-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+
+    /* News Feed List */
+    .feed-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0.25rem;
+    }
+
+    .feed-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feed-header span.timestamp-info {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .news-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.15rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-card:hover {
+      border-color: #3b82f6;
+      background: var(--bg-card);
+      transform: translateX(4px);
+    }
+
+    .news-card.card-new {
+      border-left: 4px solid var(--accent-green);
+      animation: flashIn 1s ease-out;
+    }
+
+    @keyframes flashIn {
+      0% { background: rgba(16, 185, 129, 0.2); }
+      100% { background: var(--bg-surface); }
+    }
+
+    .news-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge-category {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cat-gold {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .cat-forex {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .cat-fed {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .cat-market {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .badge-source {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-new-pill {
+      background: #10b981;
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      animation: pulse 2s infinite;
+    }
+
+    .news-time {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .news-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+      transition: color 0.15s ease;
+    }
+
+    .news-title:hover {
+      color: var(--accent-gold);
+    }
+
+    .news-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .link-action {
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+    }
+
+    .link-action:hover {
+      text-decoration: underline;
+    }
+
+    /* Notification Toast Banner */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      z-index: 100;
+      max-width: 420px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #1e293b;
+      border: 1px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(245, 158, 11, 0.3);
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      color: #fff;
+      pointer-events: auto;
+      transform: translateX(120%);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast-icon {
+      font-size: 1.35rem;
+    }
+
+    .toast-content h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .toast-content p {
+      font-size: 0.82rem;
+      line-height: 1.4;
+      color: var(--text-main);
+    }
+
+    .toast-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.2rem;
+      margin-left: auto;
+    }
+
+    .toast-close:hover {
+      color: #fff;
+    }
+
+    /* Empty and Loading States */
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .state-card {
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .state-card .icon {
+      font-size: 2.2rem;
+      opacity: 0.8;
+    }
+
+    .state-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .state-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 480px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      padding: 1.25rem 1.5rem;
+      margin-top: auto;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .footer-sources {
+      display: flex;
+      gap: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; align-items: flex-start; }
+      .controls-wrapper { width: 100%; justify-content: space-between; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .search-box { width: 100%; }
+      .toast-container { left: 1rem; right: 1rem; bottom: 1rem; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-info">
+          <h1><span class="gold">GOLD & FOREX</span> RADAR</h1>
+          <p>Real-Time Intelligence &amp; Breaking News Alerts</p>
+        </div>
+        <div class="live-badge">
+          <div class="pulse-dot"></div>
+          LIVE
+        </div>
+      </div>
+
+      <!-- Live Controls -->
+      <div class="controls-wrapper">
+        <button id="btnSoundToggle" class="btn active" title="Toggle audio chime on new news">
+          <span id="soundIcon">🔊</span>
+          <span id="soundLabel">Sound ON</span>
+        </button>
+
+        <button id="btnTestSound" class="btn btn-test" title="Play sound preview">
+          <span>🔔 Test Chime</span>
+        </button>
+
+        <button id="btnNotifToggle" class="btn" title="Enable browser push notifications">
+          <span id="notifIcon">🔕</span>
+          <span id="notifLabel">Enable Desktop Alerts</span>
+        </button>
+
+        <select id="selectInterval" class="select-input" title="Auto-refresh frequency">
+          <option value="15000">Poll: 15s</option>
+          <option value="30000" selected>Poll: 30s</option>
+          <option value="60000">Poll: 1m</option>
+          <option value="120000">Poll: 2m</option>
+          <option value="0">Poll: Off</option>
+        </select>
+
+        <button id="btnRefresh" class="btn btn-primary">
+          <span id="refreshIcon">🔄</span>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Auto-Refresh Progress Countdown Bar -->
+  <div class="refresh-progress-wrapper">
+    <div id="refreshProgressBar" class="refresh-progress-bar"></div>
+  </div>
+
+  <!-- Main Content Body -->
+  <main>
+
+    <!-- Metrics Summary Cards -->
+    <section class="metrics-grid">
+      <div class="metric-card metric-gold">
+        <div class="metric-title">
+          <span>Gold &amp; Bullion</span>
+          <span>🟡</span>
+        </div>
+        <div id="metricGoldCount" class="metric-value">0</div>
+        <div class="metric-sub">XAU/USD, bullion, physical</div>
+      </div>
+
+      <div class="metric-card metric-forex">
+        <div class="metric-title">
+          <span>Forex &amp; FX</span>
+          <span>🔵</span>
+        </div>
+        <div id="metricForexCount" class="metric-value">0</div>
+        <div class="metric-sub">EUR, GBP, JPY, DXY, Dollar</div>
+      </div>
+
+      <div class="metric-card metric-fed">
+        <div class="metric-title">
+          <span>Fed &amp; Rates</span>
+          <span>🏛️</span>
+        </div>
+        <div id="metricFedCount" class="metric-value">0</div>
+        <div class="metric-sub">FOMC, Powell, Inflation, Rates</div>
+      </div>
+
+      <div class="metric-card metric-alerts">
+        <div class="metric-title">
+          <span>Session Alerts</span>
+          <span>🚨</span>
+        </div>
+        <div id="metricNewCount" class="metric-value">0</div>
+        <div class="metric-sub">New headlines detected live</div>
+      </div>
+    </section>
+
+    <!-- Filter & Search Controls -->
+    <section class="filter-bar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-category="all">
+          All Headlines <span id="countAll" class="count">0</span>
+        </button>
+        <button class="filter-tab" data-category="Gold">
+          🟡 Gold <span id="countGold" class="count">0</span>
+        </button>
+        <button class="filter-tab" data-category="Forex">
+          🔵 Forex <span id="countForex" class="count">0</span>
+        </button>
+        <button class="filter-tab" data-category="Fed & Economy">
+          🏛️ Fed / Rates <span id="countFed" class="count">0</span>
+        </button>
+      </div>
+
+      <div class="search-box">
+        <span style="margin-right: 0.5rem; opacity: 0.5;">🔍</span>
+        <input type="text" id="searchInput" placeholder="Filter by keyword (e.g. Fed, CPI, XAU)...">
+      </div>
+    </section>
+
+    <!-- Live News Feed Section -->
+    <section class="feed-container">
+      <div class="feed-header">
+        <h2>
+          <span>Market Wire</span>
+          <span id="feedCountBadge" style="font-size: 0.8rem; font-weight: 500; color: var(--text-dim); font-family: 'JetBrains Mono', monospace;"></span>
+        </h2>
+        <span id="lastUpdatedTime" class="timestamp-info">Syncing feed...</span>
+      </div>
+
+      <!-- Feed Container -->
+      <div id="newsFeedList" class="feed-container">
+        <div class="state-card">
+          <div class="loading-spinner" style="width: 32px; height: 32px;"></div>
+          <h3>Fetching Live Market Intelligence...</h3>
+          <p>Connecting to FinancialJuice, Reuters, Forex Factory, and Bloomberg feeds.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sliding Toast Alerts for New Incoming News -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div>
+        <strong>Gold &amp; Forex Live Alert System</strong> &bull; Updates in real-time with instant browser and sound alerts.
+      </div>
+      <div class="footer-sources">
+        <span>FinancialJuice</span> &bull; 
+        <span>Reuters</span> &bull; 
+        <span>Forex Factory</span> &bull; 
+        <span>Bloomberg</span> &bull; 
+        <span>Moneycontrol</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- Application State ---
+    const state = {
+      news: [],
+      seenIds: new Set(),
+      activeCategory: 'all',
+      searchQuery: '',
+      soundEnabled: true,
+      desktopNotifEnabled: false,
+      pollInterval: 30000,
+      pollTimer: null,
+      progressTimer: null,
+      lastPollTime: Date.now(),
+      newAlertsInSession: 0,
+      unreadCount: 0,
+      originalTitle: document.title,
+    };
+
+    // --- Audio Synthesis Alert Engine (Web Audio API) ---
+    // No external MP3 needed: generates a clean two-tone financial terminal chime
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playAlertChime() {
+      if (!state.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        // Pleasant melodic notification: D5 (587.33 Hz) -> A5 (880.00 Hz)
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(587.33, now);
+        osc1.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(880, now + 0.12);
+        osc2.frequency.exponentialRampToValueAtTime(1174.66, now + 0.28);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc1.stop(now + 0.28);
+        osc2.start(now + 0.12);
+        osc2.stop(now + 0.6);
+      } catch (err) {
+        console.warn('Audio playback error:', err);
+      }
+    }
+
+    // --- Browser Notifications API ---
+    function initNotifications() {
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          state.desktopNotifEnabled = true;
+          updateNotifUI();
+        }
+      }
+    }
+
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('Browser desktop notifications are not supported on this device/browser.');
+        return;
+      }
+
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          state.desktopNotifEnabled = true;
+          updateNotifUI();
+          triggerDesktopNotification({
+            title: 'Desktop alerts enabled!',
+            category: 'Alert System',
+            source: 'Radar'
+          });
+        } else {
+          state.desktopNotifEnabled = false;
+          updateNotifUI();
+        }
+      });
+    }
+
+    function updateNotifUI() {
+      const btn = document.getElementById('btnNotifToggle');
+      const icon = document.getElementById('notifIcon');
+      const label = document.getElementById('notifLabel');
+
+      if (state.desktopNotifEnabled) {
+        btn.classList.add('alert-active');
+        icon.textContent = '🔔';
+        label.textContent = 'Alerts Active';
+      } else {
+        btn.classList.remove('alert-active');
+        icon.textContent = '🔕';
+        label.textContent = 'Enable Desktop Alerts';
+      }
+    }
+
+    function triggerDesktopNotification(item) {
+      if (!state.desktopNotifEnabled || !('Notification' in window) || Notification.permission !== 'granted') {
+        return;
+      }
+      try {
+        const notif = new Notification(`🚨 ${item.category} Alert: ${item.source}`, {
+          body: item.title,
+          icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>',
+          tag: item.id || Date.now(),
+        });
+
+        notif.onclick = () => {
+          window.focus();
+          if (item.link) window.open(item.link, '_blank');
+          notif.close();
+        };
+      } catch (e) {
+        console.warn('Desktop notification error:', e);
+      }
+    }
+
+    // --- Toast Notifications on Screen ---
+    function showToast(item) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+
+      let catIcon = '⚡';
+      if (item.category === 'Gold') catIcon = '🟡';
+      else if (item.category === 'Forex') catIcon = '🔵';
+      else if (item.category === 'Fed & Economy') catIcon = '🏛️';
+
+      toast.innerHTML = `
+        <div class="toast-icon">${catIcon}</div>
+        <div class="toast-content" style="flex: 1; cursor: pointer;">
+          <h4>NEW ${item.category.toUpperCase()} ALERT &bull; ${item.source}</h4>
+          <p>${escapeHtml(item.title)}</p>
+        </div>
+        <button class="toast-close" title="Dismiss">&times;</button>
+      `;
+
+      // Click to open link
+      toast.querySelector('.toast-content').addEventListener('click', () => {
+        if (item.link) window.open(item.link, '_blank');
+        toast.remove();
+      });
+
+      toast.querySelector('.toast-close').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toast.remove();
+      });
+
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 20);
+
+      // Auto dismiss after 7 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 7000);
+    }
+
+    // --- Data Fetching Engine ---
+    async function fetchNewsData() {
+      const refreshBtn = document.getElementById('btnRefresh');
+      const refreshIcon = document.getElementById('refreshIcon');
+      refreshIcon.classList.add('loading-spinner');
+      refreshIcon.textContent = '';
+
+      try {
+        const response = await fetch('/api/news', {
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-cache'
+        });
+
+        if (!response.ok) {
+          throw new Error(`API returned HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data && data.news) {
+          processIncomingNews(data.news);
+          document.getElementById('lastUpdatedTime').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        handleFetchError(error);
+      } finally {
+        refreshIcon.classList.remove('loading-spinner');
+        refreshIcon.textContent = '🔄';
+        resetProgressTimer();
+      }
+    }
+
+    function processIncomingNews(incomingNews) {
+      const isInitialLoad = state.seenIds.size === 0;
+      let newArrivalsCount = 0;
+      const newlyArrivedItems = [];
+
+      incomingNews.forEach(item => {
+        const uniqueKey = item.id || item.link || item.title;
+        if (!state.seenIds.has(uniqueKey)) {
+          state.seenIds.add(uniqueKey);
+          if (!isInitialLoad) {
+            item.is_new = true;
+            newArrivalsCount++;
+            newlyArrivedItems.push(item);
+          }
+        }
+      });
+
+      // Update state
+      state.news = incomingNews;
+
+      // Update Counters
+      updateMetrics();
+      renderFeed();
+
+      // Trigger Alerts for new items
+      if (!isInitialLoad && newArrivalsCount > 0) {
+        state.newAlertsInSession += newArrivalsCount;
+        state.unreadCount += newArrivalsCount;
+        document.getElementById('metricNewCount').textContent = state.newAlertsInSession;
+
+        // Play chime
+        playAlertChime();
+
+        // Update Tab Title
+        document.title = `(${state.unreadCount}) 🚨 NEW ALERTS | ${state.originalTitle}`;
+
+        // Trigger desktop notifications & toasts (limit toasts to first 2 to prevent screen clutter)
+        newlyArrivedItems.slice(0, 2).forEach(item => {
+          showToast(item);
+          triggerDesktopNotification(item);
+        });
+      }
+    }
+
+    function updateMetrics() {
+      let gold = 0, forex = 0, fed = 0;
+      state.news.forEach(item => {
+        if (item.category === 'Gold') gold++;
+        else if (item.category === 'Forex') forex++;
+        else if (item.category === 'Fed & Economy') fed++;
+      });
+
+      document.getElementById('metricGoldCount').textContent = gold;
+      document.getElementById('metricForexCount').textContent = forex;
+      document.getElementById('metricFedCount').textContent = fed;
+
+      document.getElementById('countAll').textContent = state.news.length;
+      document.getElementById('countGold').textContent = gold;
+      document.getElementById('countForex').textContent = forex;
+      document.getElementById('countFed').textContent = fed;
+    }
+
+    function renderFeed() {
+      const container = document.getElementById('newsFeedList');
+      const filtered = state.news.filter(item => {
+        // Category filter
+        if (state.activeCategory !== 'all' && item.category !== state.activeCategory) {
+          return false;
+        }
+        // Search filter
+        if (state.searchQuery) {
+          const q = state.searchQuery.toLowerCase();
+          const matchTitle = item.title.toLowerCase().includes(q);
+          const matchSource = item.source.toLowerCase().includes(q);
+          return matchTitle || matchSource;
+        }
+        return true;
+      });
+
+      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="state-card">
+            <div class="icon">🔍</div>
+            <h3>No headlines match your filter</h3>
+            <p>Try switching categories or clearing your search term "${escapeHtml(state.searchQuery)}".</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const timeAgo = formatTimeAgo(item.timestamp);
+        let catClass = 'cat-market';
+        if (item.category === 'Gold') catClass = 'cat-gold';
+        else if (item.category === 'Forex') catClass = 'cat-forex';
+        else if (item.category === 'Fed & Economy') catClass = 'cat-fed';
+
+        return `
+          <article class="news-card ${item.is_new ? 'card-new' : ''}">
+            <div class="news-card-meta">
+              <div class="meta-left">
+                <span class="badge-category ${catClass}">${escapeHtml(item.category)}</span>
+                <span class="badge-source">${escapeHtml(item.source)}</span>
+                ${item.is_new ? '<span class="badge-new-pill">✨ NEW</span>' : ''}
+              </div>
+              <span class="news-time" title="${escapeHtml(item.pubDate || '')}">${timeAgo}</span>
+            </div>
+
+            <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="news-title">
+              ${highlightKeywords(escapeHtml(item.title))}
+            </a>
+
+            <div class="news-actions">
+              <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="link-action">
+                Read Source ↗
+              </a>
+              <button onclick="copyToClipboard('${escapeJs(item.title)}')" class="btn btn-test" style="padding: 0.2rem 0.5rem;">
+                📋 Copy
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function handleFetchError(error) {
+      const container = document.getElementById('newsFeedList');
+      if (state.news.length === 0) {
+        container.innerHTML = `
+          <div class="state-card" style="border-color: var(--accent-red);">
+            <div class="icon" style="color: var(--accent-red);">⚠️</div>
+            <h3>Unable to fetch live feeds</h3>
+            <p>${escapeHtml(error.message)}. Please check your internet connection or verify the /api/news endpoint.</p>
+            <button onclick="fetchNewsData()" class="btn btn-primary" style="margin-top: 0.5rem;">
+              🔄 Retry Connection
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // --- Helpers ---
+    function formatTimeAgo(timestamp) {
+      if (!timestamp) return 'recently';
+      const seconds = Math.floor((Date.now() / 1000) - timestamp);
+      if (seconds < 60) return `${Math.max(1, seconds)}s ago`;
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    }
+
+    function highlightKeywords(text) {
+      const regex = /\b(Gold|XAU|XAUUSD|Bullion|Forex|FX|EUR\/USD|EURUSD|GBP\/USD|USD\/JPY|DXY|Fed|FOMC|Powell|Dollar|USD|Inflation|Rate Cut|Rate Hike)\b/gi;
+      return text.replace(regex, match => `<strong style="color: #60a5fa; font-weight: 700;">${match}</strong>`);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast({ title: 'Copied headline to clipboard!', category: 'Clipboard', source: 'System' });
+      });
+    };
+
+    // --- Timers & Progress Bar ---
+    function resetProgressTimer() {
+      state.lastPollTime = Date.now();
+      clearInterval(state.progressTimer);
+
+      if (state.pollInterval <= 0) {
+        document.getElementById('refreshProgressBar').style.width = '0%';
+        return;
+      }
+
+      state.progressTimer = setInterval(() => {
+        const elapsed = Date.now() - state.lastPollTime;
+        const remaining = Math.max(0, state.pollInterval - elapsed);
+        const pct = Math.min(100, (remaining / state.pollInterval) * 100);
+        document.getElementById('refreshProgressBar').style.width = `${pct}%`;
+      }, 150);
+    }
+
+    function setupPollInterval() {
+      clearInterval(state.pollTimer);
+      if (state.pollInterval > 0) {
+        state.pollTimer = setInterval(fetchNewsData, state.pollInterval);
+      }
+      resetProgressTimer();
+    }
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', () => {
+      initNotifications();
+      fetchNewsData();
+      setupPollInterval();
+
+      // Sound Toggle Button
+      document.getElementById('btnSoundToggle').addEventListener('click', () => {
+        state.soundEnabled = !state.soundEnabled;
+        const btn = document.getElementById('btnSoundToggle');
+        const icon = document.getElementById('soundIcon');
+        const label = document.getElementById('soundLabel');
+
+        if (state.soundEnabled) {
+          btn.classList.add('active');
+          icon.textContent = '🔊';
+          label.textContent = 'Sound ON';
+          playAlertChime();
+        } else {
+          btn.classList.remove('active');
+          icon.textContent = '🔇';
+          label.textContent = 'Sound MUTED';
+        }
+      });
+
+      // Test Chime Button
+      document.getElementById('btnTestSound').addEventListener('click', () => {
+        getAudioContext();
+        playAlertChime();
+        showToast({
+          title: 'Sound alert preview chime played!',
+          category: 'Audio Engine',
+          source: 'System'
+        });
+      });
+
+      // Desktop Notification Button
+      document.getElementById('btnNotifToggle').addEventListener('click', () => {
+        requestNotificationPermission();
+      });
+
+      // Interval Select
+      document.getElementById('selectInterval').addEventListener('change', (e) => {
+        state.pollInterval = parseInt(e.target.value, 10);
+        setupPollInterval();
+      });
+
+      // Refresh Button
+      document.getElementById('btnRefresh').addEventListener('click', () => {
+        fetchNewsData();
+      });
+
+      // Category Tabs
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          state.activeCategory = tab.dataset.category;
+          renderFeed();
+        });
+      });
+
+      // Search Box
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        state.searchQuery = e.target.value.trim();
+        renderFeed();
+      });
+
+      // Reset Unread Title on Focus
+      window.addEventListener('focus', () => {
+        state.unreadCount = 0;
+        document.title = state.originalTitle;
+      });
+
+      // Unlock AudioContext on first click anywhere
+      document.addEventListener('click', () => {
+        getAudioContext();
+      }, { once: true });
+    });
+  </script>
+</body>
+</html>
