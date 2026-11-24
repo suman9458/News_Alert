@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
     :root {
       --bg-base: #090d16;
@@ -25,6 +35,100 @@
       --accent-green: #10b981;
       --accent-red: #ef4444;
       --accent-purple: #a855f7;
+      --header-bg: rgba(17, 24, 39, 0.85);
+      --count-bg: rgba(0, 0, 0, 0.35);
+      --toast-bg: #1e293b;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-hover: #e2e8f0;
+      --border-color: #cbd5e1;
+      --border-highlight: #2563eb;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --accent-gold: #d97706;
+      --accent-gold-glow: rgba(217, 119, 6, 0.15);
+      --accent-cyan: #0284c7;
+      --accent-green: #059669;
+      --accent-red: #dc2626;
+      --accent-purple: #9333ea;
+      --header-bg: rgba(255, 255, 255, 0.92);
+      --count-bg: rgba(0, 0, 0, 0.08);
+      --toast-bg: #ffffff;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .metric-value {
+      color: var(--text-main);
+    }
+
+    [data-theme="light"] .metric-card {
+      box-shadow: var(--card-shadow);
+      background: var(--bg-surface);
+    }
+
+    [data-theme="light"] .metric-card:hover {
+      background: #ffffff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    [data-theme="light"] .filter-wrapper {
+      box-shadow: var(--card-shadow);
+      background: var(--bg-surface);
+    }
+
+    [data-theme="light"] .news-card {
+      box-shadow: var(--card-shadow);
+      background: var(--bg-surface);
+    }
+
+    [data-theme="light"] .news-card:hover {
+      background: #ffffff;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    [data-theme="light"] .country-dropdown-menu {
+      background: var(--bg-surface);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .country-dropdown-item:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-main);
+    }
+
+    [data-theme="light"] .country-dropdown-item.active {
+      background: rgba(37, 99, 235, 0.12);
+      color: #2563eb;
+    }
+
+    [data-theme="light"] .country-dropdown-item strong {
+      color: #2563eb;
+    }
+
+    [data-theme="light"] .toast {
+      background: var(--toast-bg);
+      border-color: rgba(217, 119, 6, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 0 15px rgba(217, 119, 6, 0.15);
+    }
+
+    [data-theme="light"] .toast-close:hover {
+      color: var(--text-main);
+    }
+
+    [data-theme="light"] .filter-tab:hover {
+      color: var(--text-main);
+      background: var(--bg-card-hover);
+    }
+
+    [data-theme="light"] .pill-btn:hover {
+      color: var(--text-main);
+      background: rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -45,7 +149,7 @@
 
     /* Header & Navigation */
     header {
-      background: rgba(17, 24, 39, 0.85);
+      background: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
@@ -374,7 +478,7 @@
       flex-wrap: wrap;
       gap: 0.75rem;
       padding-top: 0.75rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      border-top: 1px solid var(--border-color);
     }
 
     .toolbar-left-group {
@@ -597,7 +701,7 @@
     .search-box input {
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-main);
       font-size: 0.82rem;
       width: 100%;
       outline: none;
@@ -821,7 +925,7 @@
       font-size: 1.05rem;
       font-weight: 600;
       line-height: 1.45;
-      color: #fff;
+      color: var(--text-main);
       text-decoration: none;
       display: inline-block;
       transition: color 0.15s ease;
@@ -1014,6 +1118,11 @@
 
       <!-- Live Controls -->
       <div class="controls-wrapper">
+        <button id="btnThemeToggle" class="btn" title="Toggle Light / Dark Mode">
+          <span id="themeIcon">☀️</span>
+          <span id="themeLabel">Light</span>
+        </button>
+
         <button id="btnSoundToggle" class="btn active" title="Toggle audio chime on new news">
           <span id="soundIcon">🔊</span>
           <span id="soundLabel">Sound ON</span>
@@ -1858,6 +1967,44 @@
       }, 100);
     }
 
+    // --- Light / Dark Theme Management ---
+    function applyTheme(theme) {
+      const isLight = (theme === 'light');
+      if (isLight) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      const btn = document.getElementById('btnThemeToggle');
+      if (icon && label) {
+        if (isLight) {
+          icon.textContent = '🌙';
+          label.textContent = 'Dark';
+          if (btn) {
+            btn.title = 'Switch to Dark Mode';
+            btn.classList.add('active');
+          }
+        } else {
+          icon.textContent = '☀️';
+          label.textContent = 'Light';
+          if (btn) {
+            btn.title = 'Switch to Light Mode';
+            btn.classList.remove('active');
+          }
+        }
+      }
+      try {
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      } catch (e) {}
+    }
+
+    function toggleTheme() {
+      const isCurrentlyLight = document.documentElement.getAttribute('data-theme') === 'light';
+      applyTheme(isCurrentlyLight ? 'dark' : 'light');
+    }
+
     function setupPollInterval() {
       clearInterval(state.pollTimer);
       if (state.pollInterval > 0) {
@@ -1867,6 +2014,15 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Theme
+      const initialTheme = localStorage.getItem('theme') || 'dark';
+      applyTheme(initialTheme);
+
+      const btnTheme = document.getElementById('btnThemeToggle');
+      if (btnTheme) {
+        btnTheme.addEventListener('click', toggleTheme);
+      }
+
       initNotifications();
       fetchNewsData();
       setupPollInterval();
