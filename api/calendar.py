@@ -131,25 +131,18 @@ def fetch_from_remote():
         except Exception:
             pass
 
-    if not raw_events:
-        # Load seed fallback if remote is rate-limiting
-        try:
-            import os
-            seed_path = os.path.join(os.path.dirname(__file__), 'calendar_seed.json')
-            if os.path.exists(seed_path):
-                with open(seed_path, 'r', encoding='utf-8') as f:
-                    raw_events = json.load(f)
-        except Exception:
-            pass
+    return raw_events
 
-    if not raw_events:
-        return []
-
-    parsed = [parse_event(idx, ev) for idx, ev in enumerate(raw_events)]
-    # Filter out empty or holiday titles without currency
-    parsed = [p for p in parsed if p['title'] and p['currency']]
-    parsed.sort(key=lambda x: x['timestamp'])
-    return parsed
+def load_seed_events():
+    try:
+        import os
+        seed_path = os.path.join(os.path.dirname(__file__), 'calendar_seed.json')
+        if os.path.exists(seed_path):
+            with open(seed_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
 
 def get_calendar():
     global _cached_calendar, _cached_time
@@ -158,25 +151,47 @@ def get_calendar():
     if _cached_calendar is not None and (now - _cached_time) < CACHE_TTL_SECONDS:
         return _cached_calendar
 
-    events = fetch_from_remote()
+    remote_raw = fetch_from_remote()
+    seed_raw = load_seed_events()
 
-    # If fetch succeeded, update cache
-    if events:
+    remote_parsed = [parse_event(f"rem_{i}", ev) for i, ev in enumerate(remote_raw)]
+    remote_parsed = [p for p in remote_parsed if p['title'] and p['currency']]
+
+    seed_parsed = [parse_event(f"seed_{i}", ev) for i, ev in enumerate(seed_raw)]
+    seed_parsed = [p for p in seed_parsed if p['title'] and p['currency']]
+
+    # Merge: remote events take precedence, seed events add upcoming days
+    merged = []
+    seen = set()
+
+    for p in remote_parsed:
+        k = (p['title'].lower().strip(), p['date_key'], p['currency'])
+        if k not in seen:
+            seen.add(k)
+            merged.append(p)
+
+    for p in seed_parsed:
+        k = (p['title'].lower().strip(), p['date_key'], p['currency'])
+        if k not in seen:
+            seen.add(k)
+            merged.append(p)
+
+    merged.sort(key=lambda x: x['timestamp'])
+
+    if merged:
         result = {
             "status": "ok",
             "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "count": len(events),
-            "events": events
+            "count": len(merged),
+            "events": merged
         }
         _cached_calendar = result
         _cached_time = now
         return result
 
-    # If remote failed but we have stale cache, return stale cache
     if _cached_calendar is not None:
         return _cached_calendar
 
-    # Fallback to empty ok response if initial call failed
     return {
         "status": "ok",
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

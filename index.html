@@ -1129,6 +1129,40 @@
       font-weight: 700;
       color: var(--text-main);
       letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .cal-today-tag {
+      background: #2563eb;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .cal-tomorrow-tag {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    [data-theme="light"] .cal-tomorrow-tag {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-color: #93c5fd;
+    }
+
+    .cal-date-banner.banner-today {
+      border-left: 3px solid #3b82f6;
     }
 
     .cal-count-badge {
@@ -1978,6 +2012,28 @@
       document.getElementById('countFed').textContent = fed;
     }
 
+    // --- Automatic Date Rollover Engine ---
+    function getTodayYMD() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    let lastObservedYMD = getTodayYMD();
+
+    function checkDateRollover() {
+      const currentYMD = getTodayYMD();
+      if (currentYMD !== lastObservedYMD) {
+        lastObservedYMD = currentYMD;
+        // Day has passed: automatically roll forward the calendar & news
+        state.calendarLoaded = false;
+        fetchCalendarData();
+        fetchNewsData();
+      }
+    }
+
+    setInterval(checkDateRollover, 20000);
+    window.addEventListener('focus', checkDateRollover);
+
     // --- Upcoming Economic Calendar Rendering (Forex Factory) ---
     function renderUpcomingCalendar(container) {
       const feedTitle = document.getElementById('feedTitleLabel');
@@ -1994,21 +2050,35 @@
         return;
       }
 
-      // Filter events by Impact, Country, Search
+      // Current Date (Today) and Next 5 Days Rolling Window
+      const now = new Date();
+      const todayYMD = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const maxDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 5);
+      const maxDateYMD = `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}-${String(maxDate.getDate()).padStart(2, '0')}`;
+      const tomorrowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      const tomorrowYMD = `${tomorrowDate.getFullYear()}-${String(tomorrowDate.getMonth() + 1).padStart(2, '0')}-${String(tomorrowDate.getDate()).padStart(2, '0')}`;
+
+      // Filter events by Date Window (Today + Next 5 Days), Impact, Country, Search
       const filtered = state.calendarEvents.filter(ev => {
-        // 1. Impact filter
+        // 1. Date window: Keep current date (Today) and next 5 days only. Exclude past dates!
+        if (ev.date_key) {
+          if (ev.date_key < todayYMD) return false;
+          if (ev.date_key > maxDateYMD) return false;
+        }
+
+        // 2. Impact filter
         if (state.activeImpact !== 'all') {
           if (ev.impact.toLowerCase() !== state.activeImpact.toLowerCase()) return false;
         }
 
-        // 2. Country / Region filter
+        // 3. Country / Region filter
         if (state.activeCountry !== 'all') {
           const matchCountry = ev.country === state.activeCountry;
           const matchCurrency = ev.currency === state.activeCountry;
           if (!matchCountry && !matchCurrency) return false;
         }
 
-        // 3. Search query
+        // 4. Search query
         if (state.searchQuery) {
           const q = state.searchQuery.toLowerCase();
           const matchTitle = (ev.title || '').toLowerCase().includes(q);
@@ -2025,14 +2095,14 @@
       let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: '🌍', name: state.activeCountry };
       let countryFlagDisplay = countryInfo.flagImg ? `<img src="${countryInfo.flagImg}" onerror="this.onerror=null;this.src='${countryInfo.flagCdn || ''}';" class="flag-icon" style="vertical-align: middle; margin-right: 4px;">` : (countryInfo.flagEmoji + ' ');
       let countryText = state.activeCountry === 'all' ? '🌍 All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
-      document.getElementById('filterStatusBadge').innerHTML = `📅 Upcoming &bull; ${impactText} &bull; ${countryText}`;
-      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} upcoming releases`;
+      document.getElementById('filterStatusBadge').innerHTML = `📅 Current Date + Next 5 Days &bull; ${impactText} &bull; ${countryText}`;
+      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} releases (Today + Next 5 Days)`;
 
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="state-card">
             <div class="icon">📅</div>
-            <h3>No upcoming economic releases match the selected filters</h3>
+            <h3>No upcoming economic releases found for Current Date + Next 5 Days</h3>
             <p>Try switching to "All" impacts, changing the country region, or clearing the search query.</p>
           </div>
         `;
@@ -2042,12 +2112,18 @@
       // Group date-wise (preserve chronological order)
       const dateGroups = [];
       const dateMap = {};
+      const dateMeta = {};
 
       filtered.forEach(ev => {
-        const dKey = ev.date_formatted || 'Upcoming Releases';
+        const dKey = ev.date_key || ev.date_formatted || 'Upcoming';
         if (!dateMap[dKey]) {
           dateMap[dKey] = [];
           dateGroups.push(dKey);
+          dateMeta[dKey] = {
+            formatted: ev.date_formatted,
+            isToday: (dKey === todayYMD),
+            isTomorrow: (dKey === tomorrowYMD)
+          };
         }
         dateMap[dKey].push(ev);
       });
@@ -2055,11 +2131,19 @@
       let html = '';
       dateGroups.forEach(dKey => {
         const items = dateMap[dKey];
+        const meta = dateMeta[dKey] || {};
+        let dayPrefix = '';
+        if (meta.isToday) {
+          dayPrefix = '<span class="cal-today-tag">TODAY</span> ';
+        } else if (meta.isTomorrow) {
+          dayPrefix = '<span class="cal-tomorrow-tag">TOMORROW</span> ';
+        }
+
         html += `
-          <div class="cal-date-banner">
+          <div class="cal-date-banner ${meta.isToday ? 'banner-today' : ''}">
             <div class="cal-date-left">
               <span class="cal-calendar-icon">📅</span>
-              <span class="cal-date-label">${dKey}</span>
+              <span class="cal-date-label">${dayPrefix}${meta.formatted || dKey}</span>
             </div>
             <span class="cal-count-badge">${items.length} ${items.length === 1 ? 'Release' : 'Releases'}</span>
           </div>
