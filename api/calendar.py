@@ -10,7 +10,7 @@ Returns structured upcoming economic data:
 - Forecast & Previous data
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 import json
 import time
@@ -18,20 +18,26 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 CACHE_TTL_SECONDS = 900  # 15 minutes cache to prevent rate-limiting
+CALENDAR_WINDOW_DAYS = 5
+CALENDAR_FEED_URLS = [
+    'https://nfs.faireconomy.media/ff_calendar_thisweek.json',
+    # Use the following-week feed when the upstream provides it.
+    'https://nfs.faireconomy.media/ff_calendar_nextweek.json',
+]
 
 _cached_calendar = None
 _cached_time = 0
 
 CURRENCY_TO_COUNTRY = {
-    'USD': {'code': 'US', 'name': 'United States', 'flag': '/flags/us.png', 'cdn': 'https://flagcdn.com/w40/us.png', 'emoji': '🇺🇸'},
-    'EUR': {'code': 'EU', 'name': 'Eurozone', 'flag': '/flags/eu.png', 'cdn': 'https://flagcdn.com/w40/eu.png', 'emoji': '🇪🇺'},
-    'GBP': {'code': 'UK', 'name': 'United Kingdom', 'flag': '/flags/gb.png', 'cdn': 'https://flagcdn.com/w40/gb.png', 'emoji': '🇬🇧'},
-    'JPY': {'code': 'JP', 'name': 'Japan', 'flag': '/flags/jp.png', 'cdn': 'https://flagcdn.com/w40/jp.png', 'emoji': '🇯🇵'},
-    'AUD': {'code': 'AU', 'name': 'Australia', 'flag': '/flags/au.png', 'cdn': 'https://flagcdn.com/w40/au.png', 'emoji': '🇦🇺'},
-    'NZD': {'code': 'NZ', 'name': 'New Zealand', 'flag': '/flags/nz.png', 'cdn': 'https://flagcdn.com/w40/nz.png', 'emoji': '🇳🇿'},
-    'CAD': {'code': 'CA', 'name': 'Canada', 'flag': '/flags/ca.png', 'cdn': 'https://flagcdn.com/w40/ca.png', 'emoji': '🇨🇦'},
-    'CHF': {'code': 'CH', 'name': 'Switzerland', 'flag': '/flags/ch.png', 'cdn': 'https://flagcdn.com/w40/ch.png', 'emoji': '🇨🇭'},
-    'CNY': {'code': 'CN', 'name': 'China', 'flag': '/flags/cn.png', 'cdn': 'https://flagcdn.com/w40/cn.png', 'emoji': '🇨🇳'},
+    'USD': {'code': 'US', 'name': 'United States', 'flag': '/flags/us.png', 'cdn': 'https://flagcdn.com/w40/us.png', 'emoji': 'ðŸ‡ºðŸ‡¸'},
+    'EUR': {'code': 'EU', 'name': 'Eurozone', 'flag': '/flags/eu.png', 'cdn': 'https://flagcdn.com/w40/eu.png', 'emoji': 'ðŸ‡ªðŸ‡º'},
+    'GBP': {'code': 'UK', 'name': 'United Kingdom', 'flag': '/flags/gb.png', 'cdn': 'https://flagcdn.com/w40/gb.png', 'emoji': 'ðŸ‡¬ðŸ‡§'},
+    'JPY': {'code': 'JP', 'name': 'Japan', 'flag': '/flags/jp.png', 'cdn': 'https://flagcdn.com/w40/jp.png', 'emoji': 'ðŸ‡¯ðŸ‡µ'},
+    'AUD': {'code': 'AU', 'name': 'Australia', 'flag': '/flags/au.png', 'cdn': 'https://flagcdn.com/w40/au.png', 'emoji': 'ðŸ‡¦ðŸ‡º'},
+    'NZD': {'code': 'NZ', 'name': 'New Zealand', 'flag': '/flags/nz.png', 'cdn': 'https://flagcdn.com/w40/nz.png', 'emoji': 'ðŸ‡³ðŸ‡¿'},
+    'CAD': {'code': 'CA', 'name': 'Canada', 'flag': '/flags/ca.png', 'cdn': 'https://flagcdn.com/w40/ca.png', 'emoji': 'ðŸ‡¨ðŸ‡¦'},
+    'CHF': {'code': 'CH', 'name': 'Switzerland', 'flag': '/flags/ch.png', 'cdn': 'https://flagcdn.com/w40/ch.png', 'emoji': 'ðŸ‡¨ðŸ‡­'},
+    'CNY': {'code': 'CN', 'name': 'China', 'flag': '/flags/cn.png', 'cdn': 'https://flagcdn.com/w40/cn.png', 'emoji': 'ðŸ‡¨ðŸ‡³'},
 }
 
 def parse_event(idx, raw_ev):
@@ -50,14 +56,24 @@ def parse_event(idx, raw_ev):
 
     try:
         if 'T' in date_raw:
-            dt = datetime.fromisoformat(date_raw)
+            dt = datetime.fromisoformat(date_raw.replace('Z', '+00:00'))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
             timestamp = int(dt.timestamp())
             date_formatted = dt.strftime('%A, %b %d, %Y')
             date_key = dt.strftime('%Y-%m-%d')
             time_display = dt.strftime('%I:%M %p')
         elif date_raw:
             full_str = f"{date_raw} {time_raw}".strip()
-            dt = datetime.strptime(full_str, '%m-%d-%Y %I:%M%p')
+            dt = None
+            for date_format in ('%m-%d-%Y %I:%M%p', '%m-%d-%Y %I:%M %p'):
+                try:
+                    dt = datetime.strptime(full_str, date_format).replace(tzinfo=timezone.utc)
+                    break
+                except ValueError:
+                    continue
+            if dt is None:
+                raise ValueError(f'Unsupported calendar date: {full_str}')
             timestamp = int(dt.timestamp())
             date_formatted = dt.strftime('%A, %b %d, %Y')
             date_key = dt.strftime('%Y-%m-%d')
@@ -71,7 +87,7 @@ def parse_event(idx, raw_ev):
         'name': currency,
         'flag': '',
         'cdn': '',
-        'emoji': '🌐'
+        'emoji': 'ðŸŒ'
     })
 
     return {
@@ -94,12 +110,11 @@ def parse_event(idx, raw_ev):
         'source': 'Forex Factory',
     }
 
-def fetch_from_remote():
+def fetch_feed(url, allow_xml=True):
     raw_events = []
-    # 1. Try JSON
     try:
         req = urllib.request.Request(
-            'https://nfs.faireconomy.media/ff_calendar_thisweek.json',
+            url,
             headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
         )
         res = urllib.request.urlopen(req, timeout=5)
@@ -108,11 +123,11 @@ def fetch_from_remote():
     except Exception:
         pass
 
-    # 2. Try XML fallback
-    if not raw_events:
+    if not raw_events and allow_xml:
         try:
+            xml_url = url.rsplit('.', 1)[0] + '.xml'
             req = urllib.request.Request(
-                'https://nfs.faireconomy.media/ff_calendar_thisweek.xml',
+                xml_url,
                 headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
             )
             res = urllib.request.urlopen(req, timeout=5)
@@ -131,6 +146,16 @@ def fetch_from_remote():
         except Exception:
             pass
 
+    return raw_events
+
+
+def fetch_from_remote():
+    raw_events = []
+    for feed_index, feed_url in enumerate(CALENDAR_FEED_URLS):
+        # Keep the normal feed's XML fallback, but avoid extra upstream
+        # requests when probing the optional following-week JSON feed.
+        raw_events.extend(fetch_feed(feed_url, allow_xml=feed_index == 0))
+
     if not raw_events:
         # Load seed fallback if remote is rate-limiting
         try:
@@ -148,6 +173,18 @@ def fetch_from_remote():
     parsed = [parse_event(idx, ev) for idx, ev in enumerate(raw_events)]
     # Filter out empty or holiday titles without currency
     parsed = [p for p in parsed if p['title'] and p['currency']]
+    unique = {}
+    for event in parsed:
+        key = (event['title'], event['currency'], event['timestamp'])
+        unique[key] = event
+    parsed = list(unique.values())
+
+    now = time.time()
+    window_end = now + CALENDAR_WINDOW_DAYS * 24 * 60 * 60
+    parsed = [
+        event for event in parsed
+        if event['timestamp'] and now <= event['timestamp'] <= window_end
+    ]
     parsed.sort(key=lambda x: x['timestamp'])
     return parsed
 
@@ -166,6 +203,7 @@ def get_calendar():
             "status": "ok",
             "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "count": len(events),
+            "window_days": CALENDAR_WINDOW_DAYS,
             "events": events
         }
         _cached_calendar = result
@@ -181,6 +219,7 @@ def get_calendar():
         "status": "ok",
         "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "count": 0,
+        "window_days": CALENDAR_WINDOW_DAYS,
         "events": []
     }
 
@@ -215,3 +254,4 @@ class handler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         return
+

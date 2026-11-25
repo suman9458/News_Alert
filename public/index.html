@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gold & Forex Live Alert | Real-Time News Terminal</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>âš¡</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1285,7 +1285,7 @@
   <header>
     <div class="header-container">
       <div class="brand">
-        <div class="brand-icon">⚡</div>
+        <div class="brand-icon">âš¡</div>
         <div class="brand-info">
           <h1><span class="gold">GOLD & FOREX</span> RADAR</h1>
           <p>Real-Time Intelligence &amp; Breaking News Alerts</p>
@@ -1299,26 +1299,26 @@
       <!-- Live Controls -->
       <div class="controls-wrapper">
         <button id="btnThemeToggle" class="btn" title="Toggle Light / Dark Mode">
-          <span id="themeIcon">☀️</span>
+          <span id="themeIcon">â˜€ï¸</span>
           <span id="themeLabel">Light</span>
         </button>
 
         <button id="btnSoundToggle" class="btn active" title="Toggle audio chime on new news">
-          <span id="soundIcon">🔊</span>
+          <span id="soundIcon">ðŸ”Š</span>
           <span id="soundLabel">Sound ON</span>
         </button>
 
         <button id="btnNotifToggle" class="btn" title="Enable browser push notifications">
-          <span id="notifIcon">🔕</span>
+          <span id="notifIcon">ðŸ”•</span>
           <span id="notifLabel">Enable Desktop Alerts</span>
         </button>
 
         <!-- Notification Type Selection Dropdown -->
         <select id="selectNotifImpact" class="select-input select-notif-impact" title="Choose which news impact triggers notifications">
-          <option value="High">🔴 High Impact</option>
-          <option value="Medium">🟡 Medium Impact</option>
-          <option value="Low">🟢 Low Impact</option>
-          <option value="all" selected>⚡ All News</option>
+          <option value="High">ðŸ”´ High Impact</option>
+          <option value="Medium">ðŸŸ¡ Medium Impact</option>
+          <option value="Low">ðŸŸ¢ Low Impact</option>
+          <option value="all" selected>âš¡ All News</option>
         </select>
         <script>
           (function() {
@@ -1340,7 +1340,7 @@
         </select>
 
         <button id="btnRefresh" class="btn btn-primary">
-          <span id="refreshIcon">🔄</span>
+          <span id="refreshIcon">ðŸ”„</span>
           <span>Refresh</span>
         </button>
       </div>
@@ -1362,7 +1362,7 @@
           <div class="metric-title">
             <span>Gold &amp; Bullion</span>
           </div>
-          <span>🟡</span>
+          <span>ðŸŸ¡</span>
         </div>
         <div id="metricGoldCount" class="metric-value">0</div>
         <div class="metric-sub">XAU/USD, bullion, spot, futures</div>
@@ -1373,7 +1373,7 @@
           <div class="metric-title">
             <span>Forex &amp; Currencies</span>
           </div>
-          <span>🔵</span>
+          <span>ðŸ”µ</span>
         </div>
         <div id="metricForexCount" class="metric-value">0</div>
         <div class="metric-sub">EUR, GBP, JPY, DXY, Dollar</div>
@@ -1384,7 +1384,7 @@
           <div class="metric-title">
             <span>Crypto &amp; Web3</span>
           </div>
-          <span>🟣</span>
+          <span>ðŸŸ£</span>
         </div>
         <div id="metricCryptoCount" class="metric-value">0</div>
         <div class="metric-sub">BTC, ETH, Solana, On-Chain</div>
@@ -1395,7 +1395,7 @@
           <div class="metric-title">
             <span>Fed &amp; Rates</span>
           </div>
-          <span>🏛️</span>
+          <span>ðŸ›ï¸</span>
         </div>
         <div id="metricFedCount" class="metric-value">0</div>
         <div class="metric-sub">FOMC, Powell, Inflation, Rates</div>
@@ -1406,7 +1406,7 @@
           <div class="metric-title">
             <span>Live Incoming Alerts</span>
           </div>
-          <span>🚨</span>
+          <span>ðŸš¨</span>
         </div>
         <div id="metricNewCount" class="metric-value">0</div>
         <div class="metric-sub">New headlines detected live</div>
@@ -1426,25 +1426,25 @@
             All Headlines <span id="countAll" class="count">0</span>
           </button>
           <button class="filter-tab tab-alerts" data-category="alerts_only">
-            🚨 Live Alerts Only <span id="countAlertsOnly" class="count">0</span>
+            ðŸš¨ Live Alerts Only <span id="countAlertsOnly" class="count">0</span>
           </button>
           <button class="filter-tab" data-category="Gold">
-            🟡 Gold <span id="countGold" class="count">0</span>
+            ðŸŸ¡ Gold <span id="countGold" class="count">0</span>
           </button>
           <button class="filter-tab" data-category="Forex">
-            🔵 Forex <span id="countForex" class="count">0</span>
+            ðŸ”µ Forex <span id="countForex" class="count">0</span>
           </button>
           <button class="filter-tab" data-category="Crypto">
-            🟣 Crypto <span id="countCrypto" class="count">0</span>
+            ðŸŸ£ Crypto <span id="countCrypto" class="count">0</span>
           </button>
           <button class="filter-tab" data-category="Fed & Economy">
-            🏛️ Fed / Rates <span id="countFed" class="count">0</span>
+            ðŸ›ï¸ Fed / Rates <span id="countFed" class="count">0</span>
           </button>
         </div>
 
         <!-- Search Bar -->
         <div class="search-box">
-          <span style="margin-right: 0.5rem; opacity: 0.5;">🔍</span>
+          <span style="margin-right: 0.5rem; opacity: 0.5;">ðŸ”</span>
           <input type="text" id="searchInput" placeholder="Search keywords (e.g. Gold, Fed, Bitcoin, CPI)...">
         </div>
       </div>
@@ -1453,17 +1453,17 @@
       <div class="filter-toolbar-sub">
         <div class="toolbar-left-group">
 
-          <!-- Time Window Group (Upcoming first, Today second, This Week, All) -->
+          <!-- Time Window Group (Next 5 Days first, Today second, This Week, All) -->
           <div class="pill-group" title="Filter by timeframe">
-            <button class="pill-btn" data-time="upcoming">Upcoming</button>
-            <button class="pill-btn active" data-time="today">Today</button>
+            <button class="pill-btn active" data-time="upcoming">Next 5 Days</button>
+            <button class="pill-btn" data-time="today">Today</button>
             <button class="pill-btn" data-time="week">This Week</button>
             <button class="pill-btn" data-time="all">All</button>
           </div>
 
           <div class="divider-v"></div>
 
-          <!-- Impact Selector Group (1st Image: All, High 🔴, Med 🟡, Low 🟢) -->
+          <!-- Impact Selector Group (1st Image: All, High ðŸ”´, Med ðŸŸ¡, Low ðŸŸ¢) -->
           <div class="pill-group" title="Filter by Impact Level">
             <button class="pill-btn active" data-impact="all">All</button>
             <button class="pill-btn pill-impact-high" data-impact="High">
@@ -1483,14 +1483,14 @@
           <div class="country-dropdown-wrapper" id="countryDropdownWrapper" title="Choose Economic Region">
             <button id="countryDropdownBtn" class="country-dropdown-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
               <span id="countrySelectedIcon" class="selected-flag">
-                <span class="flag-globe">🌍</span>
+                <span class="flag-globe">ðŸŒ</span>
               </span>
               <span id="countrySelectedText" class="selected-text">All Countries</span>
-              <span class="dropdown-caret">▼</span>
+              <span class="dropdown-caret">â–¼</span>
             </button>
             <div id="countryDropdownMenu" class="country-dropdown-menu" role="listbox">
               <div class="country-dropdown-item active" data-country="all">
-                <span class="item-flag">🌍</span>
+                <span class="item-flag">ðŸŒ</span>
                 <span class="item-name">All Countries (Global)</span>
               </div>
               <div class="country-dropdown-item" data-country="US">
@@ -1619,7 +1619,7 @@
       seenIds: new Set(),
       activeCategory: 'all',  // 'all' | 'alerts_only' | 'Gold' | 'Forex' | 'Fed & Economy'
       activeImpact: 'all',    // 'all' | 'High' | 'Medium' | 'Low'
-      timeFilter: 'today',    // 'today' | 'week' | 'all'
+      timeFilter: 'upcoming', // 'upcoming' | 'today' | 'week' | 'all'
       activeCountry: 'all',   // 'all' | 'US' | 'EU' | 'UK' | 'JP' | 'AU' | 'NZ' | 'CA' | 'CH' | 'CN'
       usOnly: false,          // backward-compatible
       searchQuery: '',
@@ -1636,7 +1636,11 @@
       calendarEvents: [],
       calendarLoaded: false,
       calendarLoading: false,
+      calendarPollTimer: null,
     };
+
+    const CALENDAR_WINDOW_DAYS = 5;
+    const CALENDAR_WINDOW_SECONDS = CALENDAR_WINDOW_DAYS * 24 * 60 * 60;
 
     // Client-side country detection patterns for robust matching
     const CLIENT_COUNTRY_PATTERNS = {
@@ -1652,17 +1656,17 @@
     };
 
     const COUNTRY_DISPLAY_INFO = {
-      all: { flagImg: '', flagCdn: '', flagEmoji: '🌍', name: 'All Economies', code: 'ALL' },
-      US: { flagImg: '/flags/us.png', flagCdn: 'https://flagcdn.com/w40/us.png', flagEmoji: '🇺🇸', name: 'United States', code: 'US' },
-      EU: { flagImg: '/flags/eu.png', flagCdn: 'https://flagcdn.com/w40/eu.png', flagEmoji: '🇪🇺', name: 'Eurozone', code: 'EUR' },
-      UK: { flagImg: '/flags/gb.png', flagCdn: 'https://flagcdn.com/w40/gb.png', flagEmoji: '🇬🇧', name: 'United Kingdom', code: 'UK' },
-      JP: { flagImg: '/flags/jp.png', flagCdn: 'https://flagcdn.com/w40/jp.png', flagEmoji: '🇯🇵', name: 'Japan', code: 'JPY' },
-      AU: { flagImg: '/flags/au.png', flagCdn: 'https://flagcdn.com/w40/au.png', flagEmoji: '🇦🇺', name: 'Australia', code: 'AUD' },
-      NZ: { flagImg: '/flags/nz.png', flagCdn: 'https://flagcdn.com/w40/nz.png', flagEmoji: '🇳🇿', name: 'New Zealand', code: 'NZD' },
-      CA: { flagImg: '/flags/ca.png', flagCdn: 'https://flagcdn.com/w40/ca.png', flagEmoji: '🇨🇦', name: 'Canada', code: 'CAD' },
-      CH: { flagImg: '/flags/ch.png', flagCdn: 'https://flagcdn.com/w40/ch.png', flagEmoji: '🇨🇭', name: 'Switzerland', code: 'CHF' },
-      CN: { flagImg: '/flags/cn.png', flagCdn: 'https://flagcdn.com/w40/cn.png', flagEmoji: '🇨🇳', name: 'China', code: 'CNY' },
-      GLOBAL: { flagImg: '', flagCdn: '', flagEmoji: '🌍', name: 'Global Wire', code: 'GLOBAL' }
+      all: { flagImg: '', flagCdn: '', flagEmoji: 'ðŸŒ', name: 'All Economies', code: 'ALL' },
+      US: { flagImg: '/flags/us.png', flagCdn: 'https://flagcdn.com/w40/us.png', flagEmoji: 'ðŸ‡ºðŸ‡¸', name: 'United States', code: 'US' },
+      EU: { flagImg: '/flags/eu.png', flagCdn: 'https://flagcdn.com/w40/eu.png', flagEmoji: 'ðŸ‡ªðŸ‡º', name: 'Eurozone', code: 'EUR' },
+      UK: { flagImg: '/flags/gb.png', flagCdn: 'https://flagcdn.com/w40/gb.png', flagEmoji: 'ðŸ‡¬ðŸ‡§', name: 'United Kingdom', code: 'UK' },
+      JP: { flagImg: '/flags/jp.png', flagCdn: 'https://flagcdn.com/w40/jp.png', flagEmoji: 'ðŸ‡¯ðŸ‡µ', name: 'Japan', code: 'JPY' },
+      AU: { flagImg: '/flags/au.png', flagCdn: 'https://flagcdn.com/w40/au.png', flagEmoji: 'ðŸ‡¦ðŸ‡º', name: 'Australia', code: 'AUD' },
+      NZ: { flagImg: '/flags/nz.png', flagCdn: 'https://flagcdn.com/w40/nz.png', flagEmoji: 'ðŸ‡³ðŸ‡¿', name: 'New Zealand', code: 'NZD' },
+      CA: { flagImg: '/flags/ca.png', flagCdn: 'https://flagcdn.com/w40/ca.png', flagEmoji: 'ðŸ‡¨ðŸ‡¦', name: 'Canada', code: 'CAD' },
+      CH: { flagImg: '/flags/ch.png', flagCdn: 'https://flagcdn.com/w40/ch.png', flagEmoji: 'ðŸ‡¨ðŸ‡­', name: 'Switzerland', code: 'CHF' },
+      CN: { flagImg: '/flags/cn.png', flagCdn: 'https://flagcdn.com/w40/cn.png', flagEmoji: 'ðŸ‡¨ðŸ‡³', name: 'China', code: 'CNY' },
+      GLOBAL: { flagImg: '', flagCdn: '', flagEmoji: 'ðŸŒ', name: 'Global Wire', code: 'GLOBAL' }
     };
 
     // --- Audio Synthesis Alert Engine (Web Audio API) ---
@@ -1763,11 +1767,11 @@
 
       if (state.desktopNotifEnabled) {
         btn.classList.add('alert-active');
-        icon.textContent = '🔔';
+        icon.textContent = 'ðŸ””';
         label.textContent = 'Alerts Active';
       } else {
         btn.classList.remove('alert-active');
-        icon.textContent = '🔕';
+        icon.textContent = 'ðŸ”•';
         label.textContent = 'Enable Desktop Alerts';
       }
     }
@@ -1781,10 +1785,10 @@
         return;
       }
       try {
-        const impactEmoji = item.impact === 'High' ? '🔴' : (item.impact === 'Medium' ? '🟡' : '🟢');
+        const impactEmoji = item.impact === 'High' ? 'ðŸ”´' : (item.impact === 'Medium' ? 'ðŸŸ¡' : 'ðŸŸ¢');
         const notif = new Notification(`${impactEmoji} [${item.impact} Impact] ${item.category} Alert`, {
           body: `${item.source}: ${item.title}`,
-          icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>',
+          icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>âš¡</text></svg>',
           tag: item.id || Date.now(),
         });
 
@@ -1804,9 +1808,9 @@
       const toast = document.createElement('div');
       toast.className = 'toast';
 
-      let impactEmoji = '🔴';
-      if (item.impact === 'Medium') impactEmoji = '🟡';
-      else if (item.impact === 'Low') impactEmoji = '🟢';
+      let impactEmoji = 'ðŸ”´';
+      if (item.impact === 'Medium') impactEmoji = 'ðŸŸ¡';
+      else if (item.impact === 'Low') impactEmoji = 'ðŸŸ¢';
 
       toast.innerHTML = `
         <div class="toast-icon">${impactEmoji}</div>
@@ -1889,7 +1893,7 @@
         handleFetchError(error);
       } finally {
         refreshIcon.classList.remove('loading-spinner');
-        refreshIcon.textContent = '🔄';
+        refreshIcon.textContent = 'ðŸ”„';
         resetProgressTimer();
       }
     }
@@ -1935,7 +1939,7 @@
           playAlertChime();
         }
 
-        document.title = `(${state.unreadCount} New) 🚨 Market Alert | ${state.originalTitle}`;
+        document.title = `(${state.unreadCount} New) ðŸš¨ Market Alert | ${state.originalTitle}`;
 
         matchingAlertItems.forEach((item, index) => {
           setTimeout(() => {
@@ -1978,10 +1982,30 @@
       document.getElementById('countFed').textContent = fed;
     }
 
+    function isUpcomingCalendarEvent(event, nowEpoch = Math.floor(Date.now() / 1000)) {
+      const timestamp = Number(event.timestamp);
+      return Number.isFinite(timestamp)
+        && timestamp >= nowEpoch
+        && timestamp <= nowEpoch + CALENDAR_WINDOW_SECONDS;
+    }
+
+    function formatCalendarDate(event) {
+      const timestamp = Number(event.timestamp);
+      if (!Number.isFinite(timestamp) || timestamp <= 0) {
+        return event.date_formatted || 'Upcoming Releases';
+      }
+      return new Intl.DateTimeFormat(undefined, {
+        weekday: 'long',
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      }).format(new Date(timestamp * 1000));
+    }
+
     // --- Upcoming Economic Calendar Rendering (Forex Factory) ---
     function renderUpcomingCalendar(container) {
       const feedTitle = document.getElementById('feedTitleLabel');
-      if (feedTitle) feedTitle.innerHTML = '📅 Upcoming Economic Calendar &amp; Releases';
+      if (feedTitle) feedTitle.innerHTML = 'ðŸ“… Upcoming Economic Calendar &amp; Releases';
 
       if (!state.calendarLoaded && state.calendarEvents.length === 0) {
         container.innerHTML = `
@@ -1994,8 +2018,12 @@
         return;
       }
 
-      // Filter events by Impact, Country, Search
+      const nowEpoch = Math.floor(Date.now() / 1000);
+
+      // Keep only events from now through the next five days.
       const filtered = state.calendarEvents.filter(ev => {
+        if (!isUpcomingCalendarEvent(ev, nowEpoch)) return false;
+
         // 1. Impact filter
         if (state.activeImpact !== 'all') {
           if (ev.impact.toLowerCase() !== state.activeImpact.toLowerCase()) return false;
@@ -2022,16 +2050,16 @@
 
       // Update Sub Status Tag
       let impactText = state.activeImpact === 'all' ? 'All Impacts' : `${state.activeImpact} Impact`;
-      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: '🌍', name: state.activeCountry };
+      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: 'ðŸŒ', name: state.activeCountry };
       let countryFlagDisplay = countryInfo.flagImg ? `<img src="${countryInfo.flagImg}" onerror="this.onerror=null;this.src='${countryInfo.flagCdn || ''}';" class="flag-icon" style="vertical-align: middle; margin-right: 4px;">` : (countryInfo.flagEmoji + ' ');
-      let countryText = state.activeCountry === 'all' ? '🌍 All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
-      document.getElementById('filterStatusBadge').innerHTML = `📅 Upcoming &bull; ${impactText} &bull; ${countryText}`;
-      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} upcoming releases`;
+      let countryText = state.activeCountry === 'all' ? 'ðŸŒ All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
+      document.getElementById('filterStatusBadge').innerHTML = `ðŸ“… Next 5 Days &bull; ${impactText} &bull; ${countryText}`;
+      document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} releases in the next 5 days`;
 
       if (filtered.length === 0) {
         container.innerHTML = `
           <div class="state-card">
-            <div class="icon">📅</div>
+            <div class="icon">ðŸ“…</div>
             <h3>No upcoming economic releases match the selected filters</h3>
             <p>Try switching to "All" impacts, changing the country region, or clearing the search query.</p>
           </div>
@@ -2043,8 +2071,9 @@
       const dateGroups = [];
       const dateMap = {};
 
+      filtered.sort((a, b) => Number(a.timestamp) - Number(b.timestamp));
       filtered.forEach(ev => {
-        const dKey = ev.date_formatted || 'Upcoming Releases';
+        const dKey = formatCalendarDate(ev);
         if (!dateMap[dKey]) {
           dateMap[dKey] = [];
           dateGroups.push(dKey);
@@ -2058,7 +2087,7 @@
         html += `
           <div class="cal-date-banner">
             <div class="cal-date-left">
-              <span class="cal-calendar-icon">📅</span>
+              <span class="cal-calendar-icon">ðŸ“…</span>
               <span class="cal-date-label">${dKey}</span>
             </div>
             <span class="cal-count-badge">${items.length} ${items.length === 1 ? 'Release' : 'Releases'}</span>
@@ -2078,7 +2107,7 @@
 
           const flagHtml = item.country_flag 
             ? `<img src="${item.country_flag}" onerror="this.onerror=null;this.src='${item.flag_cdn || ''}';" class="flag-icon" alt="${item.currency}">`
-            : (item.flag_emoji || '🌐');
+            : (item.flag_emoji || 'ðŸŒ');
 
           html += `
             <div class="cal-event-card">
@@ -2184,9 +2213,9 @@
       // Update Sub Status Tag
       let impactText = state.activeImpact === 'all' ? 'All Impacts' : `${state.activeImpact} Impact`;
       let timeText = state.timeFilter === 'today' ? 'Today' : (state.timeFilter === 'week' ? 'This Week' : 'All Time');
-      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: '🌍', name: state.activeCountry };
+      let countryInfo = COUNTRY_DISPLAY_INFO[state.activeCountry] || { flagEmoji: 'ðŸŒ', name: state.activeCountry };
       let countryFlagDisplay = countryInfo.flagImg ? `<img src="${countryInfo.flagImg}" onerror="this.onerror=null;this.src='${countryInfo.flagCdn || ''}';" class="flag-icon" style="vertical-align: middle; margin-right: 4px;">` : (countryInfo.flagEmoji + ' ');
-      let countryText = state.activeCountry === 'all' ? '🌍 All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
+      let countryText = state.activeCountry === 'all' ? 'ðŸŒ All Economies' : `${countryFlagDisplay}${countryInfo.name}`;
       document.getElementById('filterStatusBadge').innerHTML = `${timeText} &bull; ${impactText} &bull; ${countryText}`;
 
       document.getElementById('feedCountBadge').textContent = `Showing ${filtered.length} of ${state.news.length}`;
@@ -2198,7 +2227,7 @@
         }
         container.innerHTML = `
           <div class="state-card">
-            <div class="icon">🔍</div>
+            <div class="icon">ðŸ”</div>
             <h3>${msg}</h3>
             <p>Try switching country, changing impact level, or adjusting your time range.</p>
           </div>
@@ -2215,18 +2244,18 @@
         else if (item.category === 'Fed & Economy') catClass = 'cat-fed';
 
         let impactClass = 'impact-low';
-        let impactIcon = '🟢';
+        let impactIcon = 'ðŸŸ¢';
         if (item.impact === 'High') {
           impactClass = 'impact-high';
-          impactIcon = '🔴';
+          impactIcon = 'ðŸ”´';
         } else if (item.impact === 'Medium') {
           impactClass = 'impact-medium';
-          impactIcon = '🟡';
+          impactIcon = 'ðŸŸ¡';
         }
 
         // Helper to build country badge with real visual flag icon
         const renderCountryBadge = (c) => {
-          const info = COUNTRY_DISPLAY_INFO[c] || { flagImg: '', flagCdn: '', flagEmoji: '🌍', code: c, name: c };
+          const info = COUNTRY_DISPLAY_INFO[c] || { flagImg: '', flagCdn: '', flagEmoji: 'ðŸŒ', code: c, name: c };
           const imgHtml = info.flagImg ? `<img src="${info.flagImg}" onerror="this.onerror=null;this.src='${info.flagCdn || ''}';" class="flag-icon" alt="${info.code}">` : info.flagEmoji;
           return `<span class="badge-country" title="Economic Region: ${info.name}">${imgHtml} ${info.code}</span>`;
         };
@@ -2238,7 +2267,7 @@
         } else if (item.country && item.country !== 'GLOBAL') {
           countryBadgesHtml = renderCountryBadge(item.country);
         } else {
-          countryBadgesHtml = `<span class="badge-country" style="opacity: 0.8;" title="Global Macro / Multi-region">🌍 Global</span>`;
+          countryBadgesHtml = `<span class="badge-country" style="opacity: 0.8;" title="Global Macro / Multi-region">ðŸŒ Global</span>`;
         }
 
         return `
@@ -2249,7 +2278,7 @@
                 <span class="badge-category ${catClass}">${escapeHtml(item.category)}</span>
                 ${countryBadgesHtml}
                 <span class="badge-source">${escapeHtml(item.source)}</span>
-                ${item.is_new ? '<span class="badge-new-pill">✨ LIVE ALERT</span>' : ''}
+                ${item.is_new ? '<span class="badge-new-pill">âœ¨ LIVE ALERT</span>' : ''}
               </div>
               <span class="news-time" title="${escapeHtml(item.pubDate || '')}">${timeAgo}</span>
             </div>
@@ -2260,10 +2289,10 @@
 
             <div class="news-actions">
               <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="link-action">
-                Read Source ↗
+                Read Source â†—
               </a>
               <button onclick="copyToClipboard('${escapeJs(item.title)}')" class="btn btn-test" style="padding: 0.2rem 0.5rem;">
-                📋 Copy
+                ðŸ“‹ Copy
               </button>
             </div>
           </article>
@@ -2276,11 +2305,11 @@
       if (state.news.length === 0) {
         container.innerHTML = `
           <div class="state-card" style="border-color: var(--accent-red);">
-            <div class="icon" style="color: var(--accent-red);">⚠️</div>
+            <div class="icon" style="color: var(--accent-red);">âš ï¸</div>
             <h3>Unable to fetch live feeds</h3>
             <p>${escapeHtml(error.message)}. Please check your internet connection or verify the /api/news endpoint.</p>
             <button onclick="fetchNewsData()" class="btn btn-primary" style="margin-top: 0.5rem;">
-              🔄 Retry Connection
+              ðŸ”„ Retry Connection
             </button>
           </div>
         `;
@@ -2355,14 +2384,14 @@
       const btn = document.getElementById('btnThemeToggle');
       if (icon && label) {
         if (isLight) {
-          icon.textContent = '🌙';
+          icon.textContent = 'ðŸŒ™';
           label.textContent = 'Dark';
           if (btn) {
             btn.title = 'Switch to Dark Mode';
             btn.classList.add('active');
           }
         } else {
-          icon.textContent = '☀️';
+          icon.textContent = 'â˜€ï¸';
           label.textContent = 'Light';
           if (btn) {
             btn.title = 'Switch to Light Mode';
@@ -2382,9 +2411,12 @@
 
     function setupPollInterval() {
       clearInterval(state.pollTimer);
+      clearInterval(state.calendarPollTimer);
       if (state.pollInterval > 0) {
         state.pollTimer = setInterval(fetchNewsData, state.pollInterval);
       }
+      // Refresh calendar data separately so the next day appears automatically.
+      state.calendarPollTimer = setInterval(fetchCalendarData, 15 * 60 * 1000);
       resetProgressTimer();
     }
 
@@ -2418,11 +2450,11 @@
         if (btn && icon && label) {
           if (state.soundEnabled) {
             btn.classList.add('active');
-            icon.textContent = '🔊';
+            icon.textContent = 'ðŸ”Š';
             label.textContent = 'Sound ON';
           } else {
             btn.classList.remove('active');
-            icon.textContent = '🔇';
+            icon.textContent = 'ðŸ”‡';
             label.textContent = 'Sound MUTED';
           }
         }
@@ -2463,7 +2495,7 @@
         });
       });
 
-      // 1st Image: Time Window Buttons Click (Upcoming, Today, This Week, All)
+      // 1st Image: Time Window Buttons Click (Next 5 Days, Today, This Week, All)
       document.querySelectorAll('.pill-group button[data-time]').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.pill-group button[data-time]').forEach(b => b.classList.remove('active'));
@@ -2508,7 +2540,7 @@
             state.activeCountry = countryCode;
 
             // Update Trigger button visual
-            const info = COUNTRY_DISPLAY_INFO[countryCode] || { flagImg: '', flagCdn: '', flagEmoji: '🌍', name: 'All Countries', code: 'ALL' };
+            const info = COUNTRY_DISPLAY_INFO[countryCode] || { flagImg: '', flagCdn: '', flagEmoji: 'ðŸŒ', name: 'All Countries', code: 'ALL' };
             if (info.flagImg) {
               countrySelectedIcon.innerHTML = `<img src="${info.flagImg}" onerror="this.onerror=null;this.src='${info.flagCdn || ''}';" class="flag-icon" alt="${info.code}">`;
             } else {
@@ -2564,12 +2596,12 @@
 
         if (state.soundEnabled) {
           btn.classList.add('active');
-          icon.textContent = '🔊';
+          icon.textContent = 'ðŸ”Š';
           label.textContent = 'Sound ON';
           playAlertChime();
         } else {
           btn.classList.remove('active');
-          icon.textContent = '🔇';
+          icon.textContent = 'ðŸ”‡';
           label.textContent = 'Sound MUTED';
         }
       });
@@ -2626,3 +2658,4 @@
   </script>
 </body>
 </html>
+
