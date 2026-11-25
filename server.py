@@ -16,7 +16,6 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 # Add root directory to sys.path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from api.news import get_latest_news
-from api.calendar import get_calendar
 
 
 class LocalDevHandler(SimpleHTTPRequestHandler):
@@ -28,27 +27,6 @@ class LocalDevHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        # Route /api/calendar
-        if self.path.startswith("/api/calendar"):
-            try:
-                data = get_calendar()
-                payload = json.dumps(data).encode("utf-8")
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Content-Length", str(len(payload)))
-                self.end_headers()
-                self.wfile.write(payload)
-            except Exception as e:
-                err_payload = json.dumps({"status": "error", "message": str(e)}).encode("utf-8")
-                self.send_response(500)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.send_header("Content-Length", str(len(err_payload)))
-                self.end_headers()
-                self.wfile.write(err_payload)
-            return
-
         # Route /api/news
         if self.path.startswith("/api/news"):
             try:
@@ -95,4 +73,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
